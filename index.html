@@ -15,17 +15,20 @@
     ============================================================ */
     :root, [data-theme="dark"] {
       --bg:        #170005;
-      --bg-raised: #1c050c;
-      --bg-sunken: #0d0002;
+      /* Lightened the header slightly so it doesn't blend into the body */
+      --bg-raised: #290a14;
+      /* Lifted the terminal body from #0d0002 to avoid the pure black look */
+      --bg-sunken: #1c050c; 
       --fg:        #ac9d99;
       --accent:    #91807c;
-      --dim:       #7a6a67; /* Slightly darkened accent for readable dim text */
+      --dim:       #7a6a67;
       --dir:       #91807c;
-      --error:     #8a4b56; /* Derived muted red */
-      --success:   #5b705b; /* Derived muted green */
-      --border:    #1c050c;
+      --error:     #8a4b56;
+      --success:   #5b705b;
+      /* Lightened border/dots significantly so they are visible against the dark header */
+      --border:    #4a1827; 
       --cursor:    #ac9d99;
-      --hi:        #1c050c;
+      --hi:        #290a14;
     }
     [data-theme="light"] {
       --bg:        #c6c5c0;
@@ -33,11 +36,11 @@
       --bg-sunken: #b9b5b0;
       --fg:        #3f0f18;
       --accent:    #7c5a64;
-      --dim:       #6b4a53; /* Slightly darkened accent for contrast */
+      --dim:       #6b4a53;
       --dir:       #7c5a64;
-      --error:     #9e3e4f; /* Derived deep red */
-      --success:   #466b46; /* Derived deep green */
-      --border:    #b9b5b0;
+      --error:     #9e3e4f;
+      --success:   #466b46;
+      --border:    #9a918b; /* Adjusted slightly for crispness */
       --cursor:    #3f0f18;
       --hi:        #d2d5cf;
     }
@@ -181,7 +184,7 @@
     }
 
     .term-output {
-      font-size: .78rem;
+      font-size: .8rem; /* Set base font size explicitly */
       line-height: 1.7; color: var(--accent);
     }
     .term-output-line { margin-bottom: .05rem; }
@@ -390,12 +393,27 @@
   \\____\\___/|_|  |_|___|_| \\_|\\____| |____/ \\___/ \\___/|_| \\_|
 `;
 
+  // Added social links sequence
+  const socialLinksHTML = `
+    <div style="display: flex; flex-direction: column; gap: 0.35rem; padding-left: 1rem; border-left: 2px solid var(--border); margin-bottom: 1.2rem; font-family: 'JetBrains Mono', monospace;">
+      <a href="https://linkedin.com/in/dana-alakail" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ LINKEDIN ] dana-alakail</a>
+      <a href="#" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ EMAIL ] dana.alakail@gmail.com </a>
+      <a href="https://twitter.com/aaakllld" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ X ] @aaakllld</a>
+      <a href="https://github.com/aaaklld" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ GITHUB ] aaaklld</a>
+      <a href="#" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ DISCORD ] aaaklld</a>
+    </div>
+  `;
+
   const steps = [
     { delay: 2600, type: 'type', text: 'cat comingsoon.txt', prompt: 'dana_alakail@riyadh' },
     { delay: 400, type: 'enter' },
     { delay: 200, type: 'print', text: `<div class="coming-soon-ascii">${asciiText}</div>` },
     { delay: 600, type: 'print', text: `<span style="color:var(--success);display:block;margin-bottom:0.5rem;">[ STATUS ] System architecture undergoing major overhaul.</span>` },
-    { delay: 400, type: 'print', text: `<span style="color:var(--accent);display:block;">Hunting bugs, writing writeups, and configuring the portfolio matrix.</span>` },
+    { delay: 400, type: 'print', text: `<span style="color:var(--accent);display:block;margin-bottom:1rem;">Studying, writing writeups, securing systems... see you soon ;)</span>` },
+    { delay: 800, type: 'type', text: 'cat findme.txt', prompt: 'dana_alakail@riyadh' },
+    { delay: 400, type: 'enter' },
+    { delay: 300, type: 'print', text: `<span style="color:var(--dir); display:block; margin-bottom: 0.75rem; font-family: 'JetBrains Mono', 'Noto Sans Arabic', monospace; font-size: 0.8rem;" dir="rtl">موقعي لسه قيد الإنشاء… وش رايك تزورني هنا:</span>` },
+    { delay: 200, type: 'print', text: socialLinksHTML },
     { delay: 800, type: 'type', text: '', prompt: 'dana_alakail@riyadh' } // Leaves a blinking cursor prompt
   ];
 
@@ -455,8 +473,8 @@
 %c  still building. check back soon.
 `;
   console.log(art,
-    'color: #c8c3bb; font-family: monospace; font-weight: bold;',
-    'color: #8a8680; font-family: monospace; font-style: italic;'
+    'color: #ac9d99; font-family: monospace; font-weight: bold;',
+    'color: #7a6a67; font-family: monospace; font-style: italic;'
   );
 })();
 
