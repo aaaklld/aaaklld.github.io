@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>dana_alakail@riyadh:~ $</title>
   <meta name="description" content="Cybersecurity portfolio — Coming Soon." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Sans+Arabic:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Kufi+Arabic:wght@300;400;600&display=swap" rel="stylesheet" />
 
   <style>
     /* ============================================================
@@ -15,9 +15,7 @@
     ============================================================ */
     :root, [data-theme="dark"] {
       --bg:        #170005;
-      /* Lightened the header slightly so it doesn't blend into the body */
       --bg-raised: #290a14;
-      /* Lifted the terminal body from #0d0002 to avoid the pure black look */
       --bg-sunken: #1c050c; 
       --fg:        #ac9d99;
       --accent:    #91807c;
@@ -25,7 +23,6 @@
       --dir:       #91807c;
       --error:     #8a4b56;
       --success:   #5b705b;
-      /* Lightened border/dots significantly so they are visible against the dark header */
       --border:    #4a1827; 
       --cursor:    #ac9d99;
       --hi:        #290a14;
@@ -40,7 +37,7 @@
       --dir:       #7c5a64;
       --error:     #9e3e4f;
       --success:   #466b46;
-      --border:    #9a918b; /* Adjusted slightly for crispness */
+      --border:    #9a918b; 
       --cursor:    #3f0f18;
       --hi:        #d2d5cf;
     }
@@ -160,23 +157,24 @@
     .boot-line { color: var(--dim); margin-bottom: .18rem; opacity: 0; animation: fadeSlide .15s ease forwards; }
     .boot-line.ok     { color: var(--accent); }
     .boot-line.hi     { color: var(--fg); font-weight: 700; }
-    .boot-line.arabic { font-family: 'Noto Sans Arabic', monospace; color: var(--dir); font-size: 1rem; margin-top: .6rem; }
+    .boot-line.arabic { font-family: 'Noto Kufi Arabic', monospace; color: var(--dir); font-size: 1rem; margin-top: .6rem; }
 
     /* ============================================================ HERO & TERMINAL */
-    #hero { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 0; width: 100%; }
+    #hero { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 0; width: 100%; max-width: 100vw; }
     
     .ascii-wrap {
       display: flex;
       justify-content: center;
       margin-bottom: 2.5rem;
-      overflow-x: auto;
       width: 100%;
     }
+    
     #ascii-container {
       font-family: monospace;
       white-space: pre;
-      font-size: 6px; 
-      line-height: 6px;
+      /* Fluid typography: dynamically scales to prevent mobile overflow */
+      font-size: clamp(3px, 1.2vw, 6px); 
+      line-height: 1;
       letter-spacing: 1px;
       color: var(--fg);
       user-select: none;
@@ -184,7 +182,7 @@
     }
 
     .term-output {
-      font-size: .8rem; /* Set base font size explicitly */
+      font-size: 0.75rem; /* Unifies terminal text and link sizes */
       line-height: 1.7; color: var(--accent);
     }
     .term-output-line { margin-bottom: .05rem; }
@@ -192,16 +190,14 @@
     .coming-soon-ascii {
       color: var(--fg);
       font-weight: 700;
-      font-size: 8px; /* Adjusted for mobile fit */
+      /* Fluid typography ensures it is strictly the largest element without breaking layout */
+      font-size: clamp(7px, 2.2vw, 14px); 
       line-height: 1.2;
       white-space: pre;
-      overflow-x: auto;
+      overflow-x: hidden;
       margin: 1rem 0;
     }
 
-    @media (min-width: 640px) {
-      .coming-soon-ascii { font-size: 10px; }
-    }
   </style>
 </head>
 
@@ -305,7 +301,8 @@
   const html  = document.documentElement;
   let timer;
 
-  const saved = localStorage.getItem('bh-theme') || 'light';
+  // Switched back to dark mode default
+  const saved = localStorage.getItem('bh-theme') || 'dark';
   html.setAttribute('data-theme', saved);
   btn.textContent = saved === 'dark' ? '[9aba7 mode]' : '[Masa2 mode]';
 
@@ -339,7 +336,7 @@
   img.onload = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const asciiWidth = 120;
+    const asciiWidth = window.innerWidth < 640 ? 60 : 120;
     
     const scale = asciiWidth / img.width;
     const asciiHeight = Math.floor(img.height * scale);
@@ -393,9 +390,8 @@
   \\____\\___/|_|  |_|___|_| \\_|\\____| |____/ \\___/ \\___/|_| \\_|
 `;
 
-  // Added social links sequence
   const socialLinksHTML = `
-    <div style="display: flex; flex-direction: column; gap: 0.35rem; padding-left: 1rem; border-left: 2px solid var(--border); margin-bottom: 1.2rem; font-family: 'JetBrains Mono', monospace;">
+    <div style="display: flex; flex-direction: column; gap: 0.35rem; padding-left: 1rem; border-left: 2px solid var(--border); margin-bottom: 1.2rem; font-family: inherit;">
       <a href="https://linkedin.com/in/dana-alakail" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ LINKEDIN ] dana-alakail</a>
       <a href="#" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ EMAIL ] dana.alakail@gmail.com </a>
       <a href="https://twitter.com/aaakllld" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ X ] @aaakllld</a>
@@ -412,7 +408,8 @@
     { delay: 400, type: 'print', text: `<span style="color:var(--accent);display:block;margin-bottom:1rem;">Studying, writing writeups, securing systems... see you soon ;)</span>` },
     { delay: 800, type: 'type', text: 'cat findme.txt', prompt: 'dana_alakail@riyadh' },
     { delay: 400, type: 'enter' },
-    { delay: 300, type: 'print', text: `<span style="color:var(--dir); display:block; margin-bottom: 0.75rem; font-family: 'JetBrains Mono', 'Noto Sans Arabic', monospace; font-size: 0.8rem;" dir="rtl">موقعي لسه قيد الإنشاء… وش رايك تزورني هنا:</span>` },
+    // Removed explicit sizing from Arabic string so it aligns with terminal standard hierarchy 
+    { delay: 300, type: 'print', text: `<span style="color:var(--dir); display:block; margin-bottom: 0.75rem; font-family: 'JetBrains Mono', 'Noto Kufi Arabic', monospace;" dir="rtl">موقعي لسه قيد الإنشاء… وش رايك تزورني هنا:</span>` },
     { delay: 200, type: 'print', text: socialLinksHTML },
     { delay: 800, type: 'type', text: '', prompt: 'dana_alakail@riyadh' } // Leaves a blinking cursor prompt
   ];
