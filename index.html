@@ -57,7 +57,7 @@
       display: flex;
       flex-direction: column;
       transition: background-color .35s ease, color .35s ease;
-      overflow-x: hidden;
+      /* Removed overflow-x: hidden to fix iOS pinch-zoom navbar clipping bug */
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     }
 
@@ -100,6 +100,7 @@
     /* ============================================================ NAV */
     .site-nav {
       position: sticky; top: 0; z-index: 100;
+      width: 100%; /* Ensures the blurred background stretches fully */
       border-bottom: 1px solid var(--border); padding: .75rem 0;
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       background: color-mix(in srgb, var(--bg) 88%, transparent);
@@ -172,17 +173,17 @@
     #ascii-container {
       font-family: monospace;
       white-space: pre;
-      /* Fluid typography: dynamically scales to prevent mobile overflow */
-      font-size: clamp(3px, 1.2vw, 6px); 
+      /* Upped the minimum font size slightly for visibility */
+      font-size: clamp(4px, 1.6vw, 6px); 
       line-height: 1;
-      letter-spacing: 1px;
+      /* Removed letter-spacing to allow clean scaling without breaking layout */
       color: var(--fg);
       user-select: none;
       text-align: left;
     }
 
     .term-output {
-      font-size: 0.75rem; /* Unifies terminal text and link sizes */
+      font-size: 0.75rem; 
       line-height: 1.7; color: var(--accent);
     }
     .term-output-line { margin-bottom: .05rem; }
@@ -190,7 +191,6 @@
     .coming-soon-ascii {
       color: var(--fg);
       font-weight: 700;
-      /* Fluid typography ensures it is strictly the largest element without breaking layout */
       font-size: clamp(7px, 2.2vw, 14px); 
       line-height: 1.2;
       white-space: pre;
@@ -301,7 +301,6 @@
   const html  = document.documentElement;
   let timer;
 
-  // Switched back to dark mode default
   const saved = localStorage.getItem('bh-theme') || 'dark';
   html.setAttribute('data-theme', saved);
   btn.textContent = saved === 'dark' ? '[9aba7 mode]' : '[Masa2 mode]';
@@ -336,7 +335,9 @@
   img.onload = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const asciiWidth = window.innerWidth < 640 ? 60 : 120;
+    
+    // Upped the mobile width to 100 to restore high detail
+    const asciiWidth = window.innerWidth < 640 ? 100 : 120; 
     
     const scale = asciiWidth / img.width;
     const asciiHeight = Math.floor(img.height * scale);
@@ -408,7 +409,6 @@
     { delay: 400, type: 'print', text: `<span style="color:var(--accent);display:block;margin-bottom:1rem;">Studying, writing writeups, securing systems... see you soon ;)</span>` },
     { delay: 800, type: 'type', text: 'cat findme.txt', prompt: 'dana_alakail@riyadh' },
     { delay: 400, type: 'enter' },
-    // Removed explicit sizing from Arabic string so it aligns with terminal standard hierarchy 
     { delay: 300, type: 'print', text: `<span style="color:var(--dir); display:block; margin-bottom: 0.75rem; font-family: 'JetBrains Mono', 'Noto Kufi Arabic', monospace;" dir="rtl">موقعي لسه قيد الإنشاء… وش رايك تزورني هنا:</span>` },
     { delay: 200, type: 'print', text: socialLinksHTML },
     { delay: 800, type: 'type', text: '', prompt: 'dana_alakail@riyadh' } // Leaves a blinking cursor prompt
@@ -433,7 +433,6 @@
         if (s.text) {
           typeChar(s.text, 0, () => { stepIdx++; processGhostStep(); });
         } else {
-          // Just leave the empty prompt blinking
           stepIdx++; processGhostStep();
         }
       } else if (s.type === 'enter') {
