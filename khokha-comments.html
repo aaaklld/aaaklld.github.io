@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Al-Khokha | bug_hunter@riyadh</title>
+  <meta name="description" content="Al-Khokha: A Zero Trust Steganography Tool" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Kufi+Arabic:wght@300;400;600;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       TOKENS & RESET: These are CSS variables defining your color palette.
+       Using variables makes it easy to change the theme later.
+    ============================================================ */
+    :root {
+      --bg:        #170005; /* Main background color (Dark Red) */
+      --bg-raised: #290a14; /* Slightly lighter background for terminal headers */
+      --bg-sunken: #1c050c; /* Slightly darker background for terminal bodies */
+      --fg:        #e3c8cd; /* Main text color */
+      --accent:    #c49da5; /* Accent color for highlights and folders */
+      --dim:       #96727b; /* Dimmed text for comments and paths */
+      --dark:      #7a4f59; /* Darker dimmed text specifically for hints */
+      --dir:       #c49da5; /* Directory color */
+      --error:     #8a4b56; /* Red error text */
+      --success:   #5b705b; /* Green success text */
+      --border:    #4a1827; /* Border color for boxes */
+      --cursor:    #e3c8cd; /* Blinking cursor color */
+      --hi:        #290a14; /* Highlight selection color */
+      
+      /* CLI Specific Colors (Adjusted to match theme) */
+      --cli-folder: var(--accent); /* Color for folders when 'ls' is typed */
+      --cli-exec:   var(--fg);     /* Color for executable files when 'ls' is typed */
+    }
+
+    /* Basic CSS Reset to remove default browser margins and padding */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    ::selection { background: var(--hi); color: var(--fg); }
+    html { scroll-behavior: smooth; }
+
+    /* Global Body Styling including the subtle static noise background pattern */
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* ============================================================
+       NAVIGATION & UI ELEMENTS (Top corners)
+    ============================================================ */
+    #corner-nav { position: fixed; top: 1.5rem; left: 1.5rem; z-index: 1000; }
+    #corner-nav a {
+      color: var(--dim); text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: color 0.2s;
+    }
+    #corner-nav a:hover { color: var(--fg); text-shadow: 0 0 8px var(--border); }
+
+    /* Container for the 60s timer and the [ i6la3 ] skip button */
+    #top-right-actions {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 1000;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;
+    }
+
+    /* The glowing 60s countdown timer */
+    #countdown-display {
+      color: var(--error); font-weight: 800; font-size: 1.2rem;
+      transition: opacity 0.3s; opacity: 0; pointer-events: none;
+    }
+    #countdown-display.visible { opacity: 1; }
+
+    /* Base styling for all skip buttons */
+    .btn-skip {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--dim); font-family: inherit; font-size: 0.75rem;
+      padding: 0.2rem 0.6rem; cursor: pointer; border-radius: 2px;
+      transition: all 0.2s;
+    }
+    .btn-skip:hover { color: var(--fg); border-color: var(--accent); background: var(--hi); }
+
+    /* The specific [ i6la3 ] button in the top right corner */
+    #main-skip-btn {
+      opacity: 0; pointer-events: none; transition: opacity 0.3s, background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    #main-skip-btn.visible { opacity: 1; pointer-events: auto; }
+
+    /* The top/bottom navigation arrows (e.g., ↓ cd khokha) */
+    .nav-arrow-btn {
+      background: transparent; border: none; color: var(--dim); 
+      font-family: inherit; font-size: 0.85rem; font-weight: bold; cursor: pointer;
+      transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-arrow-btn:hover { color: var(--fg); text-shadow: 0 0 8px var(--border); }
+
+    /* ============================================================
+       GAME / INTRO TERMINAL STYLING (Stage 1)
+    ============================================================ */
+    #game-container {
+      display: flex; flex-direction: column; justify-content: center;
+      min-height: 100vh; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem;
+      transition: opacity 0.8s ease;
+      cursor: text; /* Makes the mouse look like it can type anywhere in the box */
+    }
+    
+    /* Utility classes to easily color text in Javascript */
+    .term-line { margin-bottom: 0.5rem; word-wrap: break-word; }
+    .color-error { color: var(--error); }
+    .color-success { color: var(--success); }
+    .color-dim { color: var(--dim); }
+    .color-dark { color: var(--dark); }
+    .color-accent { color: var(--accent); }
+    .cli-folder { color: var(--cli-folder); font-weight: bold; }
+    .cli-exec { color: var(--cli-exec); font-weight: bold; }
+    .arabic-text { font-family: 'Noto Kufi Arabic', sans-serif; }
+    
+    /* Layout for the active typing line (prompt + input + cursor) */
+    .input-line { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .prompt-host { color: var(--accent); font-weight: 600; }
+    .prompt-dir { color: var(--dim); font-weight: 600; }
+    .input-wrapper { display: inline-flex; align-items: baseline; gap: 0; }
+    
+    /* The actual hidden invisible input field the user types into */
+    .term-input {
+      background: transparent; border: none; color: var(--fg);
+      font-family: inherit; font-size: inherit; outline: none;
+      padding: 0; margin: 0; caret-color: transparent; min-width: 1ch;
+    }
+    
+    /* The fake blinking block cursor */
+    .cursor {
+      display: inline-block; width: 0.55em; height: 1em; background: var(--cursor);
+      vertical-align: text-bottom; animation: blink 1.1s step-end infinite;
+      margin-left: 2px; pointer-events: none;
+    }
+    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+    #down-arrow-container { display: none; text-align: center; margin-top: 2rem; cursor: default; }
+
+    /* ============================================================
+       MAIN CONTENT (ARTICLE) STYLING (Stage 2)
+    ============================================================ */
+    #article-container {
+      display: none; opacity: 0; transition: opacity 0.8s ease;
+      max-width: 860px; margin: 0 auto; padding: 4rem 1.5rem;
+      font-family: 'Noto Kufi Arabic', sans-serif; text-align: right; direction: rtl;
+    }
+    
+    #article-container h3, #article-container h4 {
+      color: var(--fg); margin: 2.5rem 0 1rem; font-weight: 800; direction: rtl;
+    }
+    
+    #article-container p { color: var(--accent); margin-bottom: 1.2rem; line-height: 1.9; }
+    #article-container img { max-width: 400px; width: 100%; border: 1px solid var(--border); border-radius: 2px; margin: 1.5rem auto; display: block; }
+    
+    /* Lighter hyperlinks with dashed borders */
+    #article-container a { 
+      color: #ffe1e6; font-weight: 600; text-decoration: none; 
+      border-bottom: 1px dashed var(--dim); transition: border 0.2s, color 0.2s; cursor: pointer;
+    }
+    #article-container a:hover { 
+      border-bottom-color: #ffe1e6; color: #ffffff; text-shadow: 0 0 5px var(--dim);
+    }
+    
+    /* The repeating Sadu pattern divider */
+    .sadu-divider {
+      color: var(--dim); font-size: 0.68rem; letter-spacing: 0.08em; user-select: none;
+      overflow: hidden; white-space: nowrap; margin: 3rem 0; text-align: center; direction: ltr;
+    }
+    .sadu-divider::before { content: "/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\-:-/\\/\\"; }
+
+    .quote-box {
+      border-right: 3px solid var(--error); padding-right: 1.5rem; margin: 2rem 0;
+      color: var(--dim); background: var(--bg-raised); padding: 1.5rem;
+    }
+
+    /* Embedded Terminal Boxes inside the article */
+    .term-block {
+      background: var(--bg-sunken); border: 1px solid var(--border); border-radius: 2px;
+      overflow: hidden; margin: 2rem 0; width: 100%; direction: ltr; text-align: left;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* The top bar of the embedded terminal containing the red/yellow/green dots */
+    .term-titlebar {
+      background: var(--bg-raised); border-bottom: 1px solid var(--border); padding: 0.45rem 1rem;
+      display: flex; align-items: center; gap: 0.75rem; font-size: 0.68rem; color: var(--dim);
+    }
+    .term-dots { display: flex; gap: 0.4rem; }
+    .term-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); display: block; }
+    
+    /* The content area inside the embedded terminal */
+    .term-body { 
+      padding: 1.25rem 1.5rem; font-size: 0.8rem; line-height: 1.8; 
+      overflow-x: auto; position: relative; cursor: text; 
+    }
+
+    /* "This is an interactive element" helper text */
+    .interactive-note {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: 0.7rem; color: var(--dim); text-align: center;
+      margin-top: -1.5rem; margin-bottom: 2.5rem; direction: rtl; cursor: default;
+    }
+    .interactive-note span.en {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+    }
+
+    /* Big ASCII Art Formatting to ensure it stays crisp */
+    pre.ascii-art {
+      font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.15;
+      color: var(--fg); white-space: pre; margin: 1rem 0; user-select: none;
+    }
+
+    /* Class used to hide elements initially so JS can grab them later */
+    .template { display: none; }
+  </style>
+</head>
+<body>
+
+  <div id="corner-nav"><a href="index.html">&lt; cd ~/al-bait</a></div>
+  
+  <div id="top-right-actions">
+    <div id="countdown-display">60s</div>
+    <button id="main-skip-btn" class="btn-skip" onclick="executeAutoSolve()">[ i6la3 ]</button>
+  </div>
+
+  <main id="game-container" class="interactive-area" data-term-id="main">
+    <div id="main-output"></div>
+    
+    <div class="input-line template" id="main-input-wrapper">
+      <span id="main-prompt" class="prompt-span"></span>
+      <span class="input-wrapper">
+        <input type="text" id="main-input" class="term-input sub-input" autocomplete="off" spellcheck="false" oninput="this.style.width = Math.max(1, this.value.length) + 'ch';" style="width: 1ch;" />
+        <span class="cursor"></span>
+      </span>
+    </div>
+    
+    <div id="down-arrow-container">
+      <button class="nav-arrow-btn" onclick="switchView('article')">↓ cd khokha</button>
+    </div>
+  </main>
+
+  <article id="article-container">
+    
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <button class="nav-arrow-btn" onclick="switchView('game')">↑ cd ..</button>
+    </div>
+
+    <div class="term-block">
+      <div class="term-titlebar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <span class="term-title" style="flex: 1; text-align: center;">khokha.sh</span>
+      </div>
+      <div class="term-body">
+        <div class="color-dim"><span class="prompt-host">guest@al-masmak</span><span class="color-dim">:</span><span class="prompt-dir">~</span><span class="color-dim">$</span> cat al-khokha.txt</div>
+<pre class="ascii-art">
+		    ___   __           __________  ________  __ 
+		   /   | / /          / ____/ __ \/ ____/ / / /
+		  / /| |/ /    _____ /___ \/ / / /___ \/ /_/ /__
+		 / ___ / /___ /____/____/ / /_/ /___/ /___  ___/
+		/_/  |_\____/      /_____/\____/_____/   /_/  
+		
+		          .=======================.
+		          ||  /\   /\   /\   /\  ||
+		          || /__\ /__\ /__\ /__\ ||
+		          ||=====================||
+		          ||  |               |  ||
+		          ||  |  .=========.  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | : (O) : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  |=========|  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  '========='  |  ||
+		          ||  |               |  ||
+		          ||=====================||
+		          || \/\/ \/\/ \/\/ \/\/ ||
+		          ||=====================||
+		          '======================='
+</pre>
+        <div class="color-accent arabic-text" style="text-align: center; margin-bottom: 1.5rem; direction: rtl;">فلسفة اجدادنا لحماية شبكات اليوم.</div>
+        
+        <div class="color-dim"><span class="prompt-host">guest@al-masmak</span><span class="color-dim">:</span><span class="prompt-dir">~</span><span class="color-dim">$</span> cat about-khokha.txt</div>
+        <div class="color-fg arabic-text" style="direction: rtl; text-align: right; margin-top: 0.5rem;">
+          مشروع الخوخة هو اداة امن سيبراني Active Defense مبنية على فكرة التخفي Steganography. الاداة هذي تحمي السيرفرات الحساسة بحيث تخليها مخفية تماماً عن ادوات الفحص، وما تفتح مسار مشفر ومؤقت الا اذا استقبلت طرقة سرية مخفية وسط زحمة الانترنت.
+        </div>
+        
+        <div class="color-dim" style="margin-top: 1.5rem;"><span class="prompt-host">guest@al-masmak</span><span class="color-dim">:</span><span class="prompt-dir">~</span><span class="color-dim">$</span> cat continue.txt</div>
+        <div class="color-success">7AYAKOM ALLAH...</div>
+      </div>
+    </div>
+
+    <h3>وش قصة الخوخة؟</h3>
+    <p>يوم طاحت عيني على صورة نجدية قديمة، كنت وقتها ابحث عن افكار للمشاركة بهاكاثون ابشر. من هذي الصورة، بديت اقرا وابحث اكثر عن تفاصيل الخوخة في العمارة النجدية، الين ما جت ببالي فكرة لمشروع امن سيبراني.</p>
+    <p>الفكرة بالاساس جت من تساؤل كان دايما يجيني: كيف الانظمة الحساسة جدا تترك بعض المنافذ مفتوحة؟ هذا التساؤل هو اللي اخذني ودخلني لعالم الـ SPA Single Packet Authorization.</p>
+    <p>للاسف، ما تيسرت لي المشاركة في الهاكاثون، لكن الفكرة بقت ببالي وجلست اطورها بيني وبين نفسي الين ما قررت ابدا بتنفيذها فعلياً. بذاك الوقت، كنت توني منضمة لنادي تقنية المستقبل، ووعدت نفسي اني هالترم بستغل الفرصة واشارك بكل مبادرات النادي. وبعد قبولي باسبوع تقريباً، اعلنوا عن مبادرة <a href="https://www.linkedin.com/posts/dana-alakail_%D9%81%D9%8A-%D8%A8%D8%AF%D8%A7%D9%8A%D8%A9-%D8%A7%D9%84%D8%AA%D8%B1%D9%85-%D8%B4%D8%A7%D8%B1%D9%83%D8%AA-%D8%A8%D9%80future-talents-%D9%85%D8%B9-ugcPost-7460808627180773376-a6nD/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEui4wwBVHTYvzf4ejdAoFVKKTOGM1wXZPo" target="_blank">فيوتشر تالنتس</a>، وهي مبادرة داخلية لاعضاء النادي تسمح لهم يستعرضون مشاريعهم التقنية ويبنون شبكة علاقات.</p>
+    <p>كانت هذي اول تجربة لي من هالنوع، ووقتها الخوخة كانت لا تزال فكرة ومو اداة مكتملة، لكن توكلت على الله وقررت اسجل كموهوبة واشارك بمشروعي والحمدلله، كانت من افضل القرارات اللي اتخذتها. التجربة كانت استثنائية ويوم لا يُنسى؛ تعرفت على اشخاص رهيبين، وسمحت لي اني اعرّف الناس على نفسي وعلى شغفي بمجال الامن السيبراني. ومن اهم مكاسب مشاركتي بفيوتشر تالنتس هي اني قدرت اخذ اراء وانطباعات الزوار عن الخوخة بشكل مباشر. الفيد باك كان جداً ايجابي ومحفز، وعطوني الزوار افكار عظيمة لكيف ممكن اطور الاداة بشكل اكبر.</p>
+
+    <div class="term-block arabic-text" style="text-align: center; padding: 1rem; margin: 1rem 0; direction: rtl;">
+      <span class="color-error" style="font-weight: bold; font-family: 'JetBrains Mono', monospace;">SYSTEM STATUS [!]</span><br>
+      حالياً، الخوخة وصلت لمرحلة: <span dir="ltr" style="display:inline-block; font-weight:bold; font-family: 'JetBrains Mono', monospace;">[ BETA TESTING ]</span>
+    </div>
+
+    <div class="sadu-divider"></div>
+    
+    <h3>من العمارة النجدية للـ Zero Trust</h3>
+    <img src="Eepnlw0X0AAyfMe.jpg" alt="صورة تراثية لقصر المصمك" onerror="this.style.display='none'">
+
+    <div class="term-block interactive-area" id="term-qasr" data-term-id="qasr">
+      <div class="term-titlebar"><div class="term-dots"><span></span><span></span><span></span></div><span class="term-title" style="flex:1;text-align:center">qasr.sh</span></div>
+      <div class="term-body">
+        <div class="color-dim"><span class="prompt-host">guest@al-masmak</span><span class="color-dim">:</span><span class="prompt-dir">~</span><span class="color-dim">$</span> ./qasr</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> ايش هي الخوخة؟ هنت: مو قصدي الفاكهة</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> البداية كانت مع هذي الصوره - تعرف وين هذا؟</div>
+        
+        <div id="qasr-output"></div>
+
+        <div class="input-line" id="qasr-input-wrapper">
+          <span id="qasr-prompt" class="prompt-span"></span>
+          <span class="input-wrapper">
+            <input type="text" id="qasr-input" class="term-input sub-input" autocomplete="off" oninput="this.style.width = Math.max(1, this.value.length) + 'ch';" style="width: 1ch;" />
+            <span class="cursor"></span>
+          </span>
+        </div>
+        
+        <div id="qasr-btn-wrapper" style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+          <button class="btn-skip" onclick="autoSolveTerminal('qasr')">[ i6la3 ]</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="interactive-note">
+      هذا الجزء تفاعلي، اكتب الجواب او اضغط [ i6la3 ] <br>
+      <span class="en">- this is an interactive element, type the answer or press [ i6la3 ] -</span>
+    </div>
+
+    <h4>المشكلة: ليش سويت هالمشروع؟</h4>
+    <p>كلنا نعرف ان اول واخطر خطوة لاي هجوم سيبراني هي الاستطلاع او الـ Reconnaissance. المخترقين ما يهجمون عشوائياً، هم يستخدمون ادوات فحص زي Nmap عشان يمسحون الشبكة ويدورون ابواب مفتوحة اللي هي الـ Ports. القاعدة عندنا واضحة: <strong>Open Port = Target</strong>.. اذا فيه بورت مفتوح، السيرفر صار هدف، ومسالة وقت بس ويدخلون منه.</p>
+    <p>طييييب الحل الواقعي اننا نقفل كل البورتات والسلام عليكم، صح؟ خطا. اذا البورتات مقفلة، مدراء الانظمة ما راح يمديهم يوصلون للنظام.. لازم يخلون منافذ زي الـ SSH Port 22 مفتوحة دايم عشان يتحكمون بسيرفراتهم عن بعد. هنا تجي المشكلة: كيف اخلي الباب موجود لي انا، بس مخفي تماماً عن الهاكر؟</p>
+    
+    <div class="term-block interactive-area" id="term-recon-nmap" data-term-id="recon-nmap">
+      <div class="term-titlebar"><div class="term-dots"><span></span><span></span><span></span></div><span class="term-title" style="flex:1;text-align:center">recon_nmap.sh</span></div>
+      <div class="term-body">
+        <div class="color-dim"><span class="prompt-host">guest@al-masmak</span><span class="color-dim">:</span><span class="prompt-dir">~</span><span class="color-dim">$</span> cat hint.txt</div>
+        <div class="color-dark">>> try typing 'cat recon.txt' or 'cat nmap.txt' ;)</div>
+        
+        <div id="recon-nmap-output"></div>
+
+        <div class="input-line" id="recon-nmap-input-wrapper">
+          <span id="recon-nmap-prompt" class="prompt-span"></span>
+          <span class="input-wrapper">
+            <input type="text" id="recon-nmap-input" class="term-input sub-input" autocomplete="off" oninput="this.style.width = Math.max(1, this.value.length) + 'ch';" style="width: 1ch;" />
+            <span class="cursor"></span>
+          </span>
+        </div>
+        
+        <div id="recon-nmap-btn-wrapper" style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+          <button class="btn-skip" onclick="autoSolveTerminal('recon-nmap')">[ i6la3 ]</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="interactive-note">
+      هذا الجزء تفاعلي، اكتب الجواب او اضغط [ i6la3 ] <br>
+      <span class="en">- this is an interactive element, type the answer or press [ i6la3 ] -</span>
+    </div>
+
+    <h4>الحل: التخفي تحت رادار الـ DPI</h4>
+    <p>يوم عرضت مشروعي، في احد سالني: ليش ما نرسل Packet مشفرة تفتح الباب وخلاص؟<br>
+    الجواب: هذا هو الحل الموجود الحالي لكن فيه ثغره كبيره حديثة.. الجدران النارية الحديثة او الـ DPI Firewalls ذكية جداً. اول، لو ارسلت باكيت فيه بيانات مشفرة الفايروول ما راح يعرف لان سابقا كانوا فقط يشيكون على الـ packet header وما يدخل الفايروول ويشيك على الـ payload لكن الحين لو ارسلت بيانات مشفرة شكلها غريب، الفايرول بيشوف انها Anomaly ويطيحها على طول. عشان كذا في الخوخة، التخفي هو الحل.</p>
+    <p>استخدمت اوامر الـ Ping ICMP لان البنق هو نبض الانترنت، ومستحيل الفايرول يمنعه والا بتتعطل الشبكة. هنا ببساطة الخوخة قاعدة تمرر السر حقنا داخل الزحمة الطبيعية للانترنت كانها مرور عادي، عشان العدو ما يفرق بينها وبين البنق العادي.</p>
+
+    <h4>طيب كيف تشتغل؟</h4>
+    <p>السيرفر حقنا ميت تماماً، ما فيه اي بورت مفتوح يتسمع منه. كتبت Daemon بايثون يتنصت بصمت تام على مستوى الشبكة بيبحث عن البينقات حقاتنا. العملية كلها تصير بـ 4 خطوات سريعة وصامتة:</p>
+    <ul style="margin-right: 1.5rem; color: var(--accent); line-height: 1.9; margin-bottom: 1.2rem;">
+      <li><strong>LISTEN الصمت:</strong> كود البايثون حقي يتنصت على كرت الشبكة مباشرة Layer 2 بصمت تام، بدون ما يفتح اي بورت.</li>
+      <li><strong>KNOCK الطرقة:</strong> المستخدم يكتب الارقام يدوياً داخل الـ client عشان ما تنحفظ بالـ History وترسل للشبكة.</li>
+      <li><strong>TRIGGER التفعيل:</strong> السيرفر يلقط التسلسل الصحيح، ويعدل قواعد الفايرول ديناميكياً عشان يفتح منفذ الـ SSH لـ IP المستخدم فقط.</li>
+      <li><strong>DISAPPEAR الاختفاء:</strong> السيرفر يعطيك 10 ثواني بس تدخل فيها. بعدها؟ تختفي قواعد الفايرول ويقفل الباب تماماً. انت تبقى متصل وتكمل شغلك بشكل امن، بس اي احد يجي وراك بيلقى جدار!.</li>
+    </ul>
+
+    <p>طيب وشلون السيرفر يعرف ان هالبينق مني انا مو بنق عادي؟ السر في حجم البيانات (Payload Size). النظام يطلب من المستخدم المصرح له ارسال 3 بنقات باحجام محددة بالضبط وبالترتيب، مثلا 72 > 114 > 201. طيب هل ممكن هذي الارقام تجي بالصدفة؟ لو اخذنا بالاعتبار الاحجام الافتراضية للانظمة الويندوز 32 واللينكس 56، وحسبناها رياضياً: $P = 1/65508^3$ الاحتمالية ان جهاز بالانترنت يرسل هذي الاحجام الثلاثة بالترتيب صدفة هي <strong>1 من 281 ترليون</strong>! اي - مستحيل الباب يفتح بالغلط.</p>
+
+    <h3>طيب ليش AL-5054؟</h3>
+    <p>ممكن لاحظتوا اني احيانا اكتب AL-5054 بدل AL-KHOKHA.. طيب ليش؟ جرب وشف!</p>
+
+    <div class="term-block interactive-area" id="term-5o5a" data-term-id="5o5a">
+      <div class="term-titlebar"><div class="term-dots"><span></span><span></span><span></span></div><span class="term-title" style="flex:1;text-align:center">name.sh</span></div>
+      <div class="term-body">
+        <div class="color-dim"><span class="prompt-host">guest@al-masmak</span><span class="color-dim">:</span><span class="prompt-dir">~</span><span class="color-dim">$</span> cat hint.txt</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> 3 = ع</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> 6 = ط</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> 8 = ق</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> 9 = ص</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> 7 = ح</div>
+        <div class="color-dark arabic-text" dir="rtl" style="text-align:left;">>> 5 = خ ;))</div>
+        <div class="color-dark" style="margin-top:0.5rem">>> maybe try... cat 5o5a.txt</div>
+        
+        <div id="5o5a-output"></div>
+
+        <div class="input-line" id="5o5a-input-wrapper">
+          <span id="5o5a-prompt" class="prompt-span"></span>
+          <span class="input-wrapper">
+            <input type="text" id="5o5a-input" class="term-input sub-input" autocomplete="off" oninput="this.style.width = Math.max(1, this.value.length) + 'ch';" style="width: 1ch;" />
+            <span class="cursor"></span>
+          </span>
+        </div>
+        
+        <div id="5o5a-btn-wrapper" style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+          <button class="btn-skip" onclick="autoSolveTerminal('5o5a')">[ i6la3 ]</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="interactive-note">
+      هذا الجزء تفاعلي، اكتب الجواب او اضغط [ i6la3 ] <br>
+      <span class="en">- this is an interactive element, type the answer or press [ i6la3 ] -</span>
+    </div>
+
+    <div class="sadu-divider"></div>
+
+    <h3>وش الخطوة الجاية؟</h3>
+    <p>المشروع للحين يتطور، ومن اهم الاضافات اللي شغاله عليها:</p>
+    <ul style="margin-right: 1.5rem; color: var(--accent); line-height: 1.9; margin-bottom: 1.2rem;">
+      <li>اضافة خوارزمية <strong>TOTP Time-Based One-Time Password</strong>.</li>
+      <li>توليد احجام بيانات متغيرة Dynamic Packet Sizing تتغير كل 30 ثانية.</li>
+      <li>حماية كاملة ضد هجمات اعادة الارسال Replay Attacks.</li>
+    </ul>
+
+    <p>في النهاية، القاعدة في الامن السيبراني تقول:<br>
+    <strong>اللي ما ينشاف، ما يُخترق.</strong> You cannot hack what you cannot see.</p>
+
+    <div class="sadu-divider"></div>
+
+    <div class="term-block arabic-text" style="text-align: center; padding: 1rem; margin: 1rem 0; direction: rtl;">
+      <span class="color-error" style="font-weight: bold; font-family: 'JetBrains Mono', monospace;">SYSTEM ALERT [!]</span><br>
+      المشروع حالياً في مرحلة الـ Closed Beta للـ Testing.<br>
+      اذا ودك تختبر امان الاداة وتساعدني بتطوير الخوخة، تقدر تتواصل معي وتسجل اسمك في قائمة الـ Beta Testers &lt;٤
+      <br><br>
+      <span dir="ltr" style="display:inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--dim);">
+        FOR MORE INFO OR TO REQUEST TO JOIN AL-KHOKHA'S BETA TESTERS, CLICK <a href="index.html#contact">[ HERE ]</a>
+      </span>
+    </div>
+
+  </article>
+
+  <div id="tpl-door-full" class="template">
+<pre class="ascii-art">
+		    ___   __           __________  ________  __ 
+		   /   | / /          / ____/ __ \/ ____/ / / /
+		  / /| |/ /    _____ /___ \/ / / /___ \/ /_/ /__
+		 / ___ / /___ /____/____/ / /_/ /___/ /___  ___/
+		/_/  |_\____/      /_____/\____/_____/   /_/  
+		
+		          .=======================.
+		          ||  /\   /\   /\   /\  ||
+		          || /__\ /__\ /__\ /__\ ||
+		          ||=====================||
+		          ||  |               |  ||
+		          ||  |  .=========.  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | : (O) : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  |=========|  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  '========='  |  ||
+		          ||  |               |  ||
+		          ||=====================||
+		          || \/\/ \/\/ \/\/ \/\/ ||
+		          ||=====================||
+		          '======================='
+</pre>
+    <div class="color-accent arabic-text" style="text-align: center; margin-bottom: 1.5rem; direction: rtl;">فلسفة اجدادنا لحماية شبكات اليوم.</div>
+  </div>
+
+  <div id="tpl-about-khokha" class="template">
+    <div class="color-fg arabic-text" style="direction: rtl; text-align: right; margin-top: 0.5rem; margin-bottom: 1rem;">
+      مشروع الخوخة هو اداة امن سيبراني Active Defense مبنية على فكرة التخفي Steganography. الاداة هذي تحمي السيرفرات الحساسة بحيث تخليها مخفية تماماً عن ادوات الفحص، وما تفتح مسار مشفر ومؤقت الا اذا استقبلت طرقة سرية مخفية وسط زحمة الانترنت.
+    </div>
+  </div>
+
+  <div id="tpl-continue" class="template">
+    <div class="color-success" style="margin-bottom: 1rem;">7AYAKOM ALLAH...</div>
+  </div>
+
+  <div id="tpl-door-ascii" class="template">
+<pre class="ascii-art">
+		          .=======================.
+		          ||  /\   /\   /\   /\  ||
+		          || /__\ /__\ /__\ /__\ ||
+		          ||=====================||
+		          ||  |               |  ||
+		          ||  |  .=========.  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | : (O) : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  |=========|  |  ||
+		          ||  |  | :  |  : |  |  ||
+		          ||  |  '========='  |  ||
+		          ||  |               |  ||
+		          ||=====================||
+		          || \/\/ \/\/ \/\/ \/\/ ||
+		          ||=====================||
+		          '======================='
+</pre>
+  </div>
+
+  <div id="tpl-recon-ascii" class="template">
+<pre class="ascii-art color-accent arabic-text" dir="rtl" style="text-align:left; line-height:1.7;">
+               جـــدول زمــــنــي لـــهـــجـــوم تــقـــلــيــدي            
+ 
+ 
+[ 1 ]
+-- البحث --
+المخترق يستخدم اداة فحص عشان يلقى أي بوابة أو منفذ مفتوح في السيرفر
+
+  [ 2 ]
+-- الفحص --
+يشوف وش الخدمة اللي تشتغل ورا هذا الباب، ويدور ثغرة أمنية معروفة فيها 
+ 
+[ 3 ]
+-- الهجوم --
+يرسل كود أو فيروس مخصص يستغل الثغرة عشان يكسر القفل ويتجاوز النظام الأمني 
+
+  [ 4 ]
+-- السيطرة --
+يدخل السيرفر، ويصير عنده تحكم كامل؛ يسرق البيانات،
+او يثبت برامج خبيثة، او يقفل النظام
+v
+v
+v
+   
+SYSTEM COMPROMISED 
+</pre>
+  </div>
+
+  <div id="tpl-nmap-ascii" class="template">
+<pre class="ascii-art color-accent">
+				Fig: TCP Connect Scan
+ 
+ 
+                                          SYN                         .-----------.
+                               --------------------------------->     | ::: ::: ::: |  
+                             /            SYN / ACK                   | ::: ::: ::: |  Open port
+                            /  <---------------------------------     | ::: ::: ::: |  
+                           /              ACK                         '-----------'
+                          /    --------------------------------->
+                         /
+       .-----------.    /
+       |           |   /                  SYN                         .-----------.
+       |           |  /        --------------------------------->     | ::: ::: ::: | 
+       |___________|-+                    RST                         | ::: ::: ::: |  Closed port
+       /==========/   \        <---------------------------------     | ::: ::: ::: |  
+  Client with NMap     \                                              '-----------'
+  installed             \
+                         \
+                          \               SYN                         .-----------.
+                               --------------------------------->     | ::: ::: ::: |  
+                                                                      | ::: ::: ::: |  Filtered port
+                                                                      | ::: ::: ::: |  
+                                                                      '-----------'
+</pre>
+  </div>
+
+  <div id="tpl-5o5a-text" class="template">
+<pre class="ascii-art">
+		    ___   __           __________  ________  __ 
+		   /   | / /          / ____/ __ \/ ____/ / / /
+		  / /| |/ /    _____ /___ \/ / / /___ \/ /_/ /__
+		 / ___ / /___ /____/____/ / /_/ /___/ /___  ___/
+		/_/  |_\____/      /_____/\____/_____/   /_/  
+</pre>
+    <div class="color-accent arabic-text" style="text-align:right; direction:rtl; margin-top:1rem;">
+      >> صراحة، احب لما يكون لمشروع هوية كاملة واحب افكر بالتفاصيل اللي ممكن بعض الاشخاص ما يركزون عليها. فكرت بما ان ما نقدر نسمي executable اسم مع حروف عربية، قلت بدل لا اعتمد اسم AL-KHOKHA وبس (بووورنق) فكرت اكثر عن هوية المشروع. اولا، تعتمد الهوية على الثقافة السعوديه، من الاسم الى الـ ascii art اللي ينطبع اذا شغلت الاداة (باب نجدي) فحبيت اخلي الاسم اقرب للغة العربية. ثانيا، المشروع يعتمد على فكرة الـ Steganography، فليش ما الاسم يكون متخفي بعد.. فـ 5054 هو مكس بين الـ leetspeak والـ m3arab (مو رمز قبيلة مثل ما توقع احد الحضور بفيوتشر تالنتس هههههههههههههه)<br>
+      >> 5 = خ ، 0 = O ، 4 = A.<br>
+      >> النتيجة حرفياً تقرا: خـ و خـ ة
+    </div>
+  </div>
+
+
+  <script>
+    /* ==========================================
+       VIRTUAL FILE SYSTEM
+       This is a fake directory structure represented as a nested object.
+       When a user types 'ls' or 'cd' or 'cat', the interpreter looks in here.
+       ========================================== */
+    const virtualFS = {
+      "~": {
+        "type": "dir",
+        "content": {
+          "projects": {
+            "type": "dir",
+            "content": {
+              "al-khokha": {
+                "type": "dir",
+                "content": {
+                  "khokha.sh": { "type": "exec", "content": "Tool running..." },
+                  "qasr.sh": { "type": "exec", "content": "Running visual simulation..." },
+                  "recon.sh": { "type": "exec", "content": "Initiating sequence..." },
+                  "nmap.sh": { "type": "exec", "content": "Initiating sequence..." },
+                  "name.sh": { "type": "exec", "content": "Resolving identity..." }
+                }
+              }
+            }
+          },
+          "about_me": {
+            "type": "dir",
+            "content": {
+              "about.txt": { "type": "file", "content": "Dana Alakail - Cybersecurity Enthusiast. Building tools that embrace the Zero Trust philosophy." },
+              "ctf.txt": { "type": "file", "content": "I love playing CTFs. Specifically, forensics and reverse engineering." }
+            }
+          },
+          "contact": {
+            "type": "dir",
+            "content": {
+              "contact.txt": { "type": "file", "content": "You can reach me via the form at: https://tally.so/r/Gx5XjQ" }
+            }
+          },
+          /* The hidden Easter Egg flag */
+          "flag.txt": { "type": "file", "content": "FLAG{w3lc0m3_t0_th3_d4rw4z4_y0u_h4ck3r}" },
+          
+          /* The puzzle specific texts. We use special keys (TPL_...) 
+             to tell the JS to pull the HTML content from the hidden templates above */
+          "hint.txt": { "type": "file", "content": "Have you tried to ping al-darwaza? See what happens." },
+          "recon.txt": { "type": "file", "content": "TPL_RECON" },
+          "nmap.txt": { "type": "file", "content": "TPL_NMAP" },
+          "5o5a.txt": { "type": "file", "content": "TPL_5O5A" },
+          "al-khokha.txt": { "type": "file", "content": "TPL_DOOR_FULL" },
+          "about-khokha.txt": { "type": "file", "content": "TPL_ABOUT_KHOKHA" },
+          "continue.txt": { "type": "file", "content": "TPL_CONTINUE" },
+          
+          /* Special executable that redirects users */
+          "join_beta.sh": { "type": "exec", "content": "REDIRECT_BETA" }
+        }
+      }
+    };
+
+    /* ==========================================
+       GLOBAL STATE VARIABLES
+       Keeps track of where the user is and what they've solved.
+       ========================================== */
+    let currentDir = "~";           // User's current fake directory
+    let cmdHistory = [];            // Array of previously typed commands
+    let historyIdx = -1;            // Current position when navigating history with up/down arrows
+    let autoSolving = false;        // Prevents user input while the auto-solver is typing
+    let hasCompletedInit = false;   // Did they finish Stage 1?
+    let mainStep = 0;               // Tracks progress in the Stage 1 puzzle (0-4)
+    
+    // Tracks the completion states for the mini-terminals in the article
+    const puzzleStates = {
+      'qasr': { solved: false },
+      'recon-nmap': { solved: false, reconDone: false, nmapDone: false },
+      '5o5a': { solved: false }
+    };
+
+    // DOM Elements we need to modify frequently
+    const displayTimer = document.getElementById('countdown-display');
+    const mainSkipBtn = document.getElementById('main-skip-btn');
+    const gameContainer = document.getElementById('game-container');
+    const articleContainer = document.getElementById('article-container');
+    
+    let mainCountdown = 60; // Start at 60 seconds
+    let mainTimerInterval;
+
+    /* ==========================================
+       UTILITY FUNCTIONS
+       ========================================== */
+       
+    // Translates a path like "~/about_me" into the actual object in virtualFS
+    function getDirObj(pathStr) {
+      if (pathStr === "~") return virtualFS["~"];
+      const parts = pathStr.split("/").filter(p => p !== "" && p !== "~");
+      let current = virtualFS["~"];
+      for (const p of parts) {
+        if (current && current.content && current.content[p] && current.content[p].type === "dir") {
+          current = current.content[p];
+        } else {
+          return null;
+        }
+      }
+      return current;
+    }
+
+    // Generates the colorful prompt string (e.g., guest@al-masmak:~$) dynamically 
+    // so it shows the current directory or specific prompt styles for unsolved puzzles.
+    function getPromptHTML(termId) {
+      if (termId === 'qasr' && !puzzleStates['qasr'].solved) {
+        return `<span class="color-accent" style="font-weight:bold;">>> </span>`;
+      }
+      if (termId === 'main' && mainStep >= 2 && !hasCompletedInit) {
+         return `<span class="color-accent">> Payload ${mainStep - 1}: </span>`;
+      }
+      return `<span class="prompt-host">guest@al-masmak</span><span class="color-dim">:</span><span class="prompt-dir">${currentDir}</span><span class="color-dim">$</span> `;
+    }
+
+    // Re-renders the prompt text across all interactive terminals
+    function updateAllPrompts() {
+      document.querySelectorAll('.prompt-span').forEach(span => {
+        const wrapper = span.closest('.input-line');
+        const termContainer = wrapper.closest('.interactive-area');
+        if (termContainer) {
+          const termId = termContainer.dataset.termId;
+          span.innerHTML = getPromptHTML(termId);
+        }
+      });
+    }
+
+    // Appends a new line of output to a specific terminal box
+    function printLine(html, container, autoScroll = true, cssClass = '') {
+      const div = document.createElement('div');
+      div.className = `term-line ${cssClass}`;
+      div.innerHTML = html;
+      container.appendChild(div);
+      if(autoScroll) window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Helper to simulate "typing" by adding text character by character with a delay
+    async function typeText(text, container, speed = 25, cssClass = '', autoScroll = true) {
+      const div = document.createElement('div');
+      div.className = `term-line ${cssClass}`;
+      container.appendChild(div);
+      
+      for (let i = 0; i < text.length; i++) {
+        div.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+        if(autoScroll) window.scrollTo(0, document.body.scrollHeight);
+        // Wait 'speed' ms before typing the next letter
+        await new Promise(r => setTimeout(r, speed));
+      }
+    }
+
+    /* Focus Management:
+      If the user clicks ANYWHERE inside a terminal box (.interactive-area), 
+      it automatically focuses the invisible `<input>` field so they can type immediately.
+    */
+    document.querySelectorAll('.interactive-area').forEach(container => {
+      container.addEventListener('click', (e) => {
+        if(e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return; // Don't interrupt real buttons
+        const activeInput = container.querySelector('input:not([disabled])');
+        if (activeInput) activeInput.focus();
+      });
+    });
+
+    /* ==========================================
+       THE COMMAND INTERPRETER (The Brain)
+       This function takes what the user typed and decides what to output.
+       ========================================== */
+    function processCommand(termId, val, outBox, inputField) {
+      const promptHTML = getPromptHTML(termId);
+      
+      // 1. First, echo back what the user typed to the screen
+      printLine(`${promptHTML}${val}`, outBox, false);
+
+      // Do nothing if they just hit enter on a blank line
+      if (val === '') return;
+      
+      // Split input into command and arguments (e.g. "cd projects" -> ["cd", "projects"])
+      const args = val.split(" ").filter(s => s.trim() !== "");
+      const cmd = args[0].toLowerCase();
+
+      // ==========================================
+      // PUZZLE INTERCEPTIONS
+      // We check if the user is typing an answer to a specific puzzle FIRST.
+      // If so, we handle it and STOP processing normal Unix commands.
+      // ==========================================
+      
+      // Stage 1 Intro Puzzle intercept
+      if (termId === 'main' && !hasCompletedInit) {
+        if (cmd === 'il3ab' && mainStep === 0) { handleMainProgress(val, outBox); return; }
+        if (cmd === './5054' && mainStep === 1) { handleMainProgress(val, outBox); return; }
+        if (mainStep >= 2) { handleMainProgress(val, outBox); return; } // intercepts payloads 72, 114, 201
+      }
+
+      // Qasr Terminal intercept
+      if (termId === 'qasr' && !puzzleStates['qasr'].solved) {
+        const correctAnswers = ['al-masmak', 'المصمك', 'قصر المصمك', 'masmak'];
+        if (correctAnswers.includes(val.toLowerCase())) {
+          solveQasr(outBox, termId);
+        } else {
+          printLine(`<span class="color-error">>> Unknown response. Try again.</span>`, outBox, false);
+        }
+        return;
+      }
+
+      // Recon & Nmap combined terminal intercept
+      if (termId === 'recon-nmap' && !puzzleStates['recon-nmap'].solved) {
+        if (val === 'cat recon.txt') {
+          puzzleStates['recon-nmap'].reconDone = true;
+          outBox.innerHTML += document.getElementById('tpl-recon-ascii').innerHTML;
+          checkReconNmapDone(termId);
+          return;
+        } else if (val === 'cat nmap.txt') {
+          puzzleStates['recon-nmap'].nmapDone = true;
+          outBox.innerHTML += document.getElementById('tpl-nmap-ascii').innerHTML;
+          checkReconNmapDone(termId);
+          return;
+        }
+      }
+      
+      // 5o5a Terminal intercept
+      if (termId === '5o5a' && !puzzleStates['5o5a'].solved) {
+        if (val === 'cat 5o5a.txt') {
+           puzzleStates['5o5a'].solved = true;
+           outBox.innerHTML += document.getElementById('tpl-5o5a-text').innerHTML;
+           hideSkipBtn(termId);
+           return;
+        }
+      }
+
+      // ==========================================
+      // STANDARD UNIX COMMANDS
+      // If no puzzles caught the input, act like a real terminal.
+      // ==========================================
+      switch (cmd) {
+        case 'help':
+          printLine(`Available commands: ls, cd, pwd, cat, clear, whoami, date, history, ping, nmap, sudo, help`, outBox, false, "color-dim");
+          break;
+        case 'whoami':
+          printLine(`guest`, outBox, false);
+          break;
+        case 'date':
+          printLine(new Date().toString(), outBox, false);
+          break;
+        case 'clear':
+          outBox.innerHTML = ''; // Wipes the terminal box clean
+          break;
+        case 'history':
+          let histHtml = cmdHistory.map((c, i) => `  ${i+1}  ${c}`).join('<br>');
+          printLine(histHtml, outBox, false);
+          break;
+        case 'pwd':
+          let p = currentDir === "~" ? "/home/guest" : `/home/guest${currentDir.substring(1)}`;
+          printLine(p, outBox, false);
+          break;
+        case 'ls':
+          // List contents of current simulated directory
+          let curObj = getDirObj(currentDir);
+          if (curObj && curObj.content) {
+             let res = [];
+             for (const [key, val] of Object.entries(curObj.content)) {
+                // Color code based on file type
+                if (val.type === "dir") res.push(`<span class="cli-folder">${key}</span>`);
+                else if (val.type === "exec") res.push(`<span class="cli-exec">${key}</span>`);
+                else res.push(`<span>${key}</span>`);
+             }
+             printLine(res.join(" &nbsp;&nbsp; "), outBox, false);
+          }
+          break;
+        case 'cd':
+          // Change simulated directory
+          let target = args[1] || "~";
+          if (target === "~" || target === "") {
+             currentDir = "~";
+          } else if (target === "..") {
+             if (currentDir !== "~") {
+                let parts = currentDir.split("/");
+                parts.pop(); // Remove last segment to go up
+                currentDir = parts.join("/") || "~";
+             }
+          } else {
+             // Handle simple relative paths
+             let attempt = currentDir === "~" ? `~/${target}` : `${currentDir}/${target}`;
+             if (getDirObj(attempt)) {
+                currentDir = attempt;
+             } else {
+                printLine(`bash: cd: ${target}: No such file or directory`, outBox, false);
+             }
+          }
+          updateAllPrompts(); // Reflect new directory in the prompt
+          break;
+        case 'cat':
+          // Read a simulated file
+          let file = args[1];
+          if (!file) { printLine(`cat: missing file operand`, outBox, false); break; }
+          let d = getDirObj(currentDir);
+          if (d && d.content && d.content[file]) {
+             if (d.content[file].type === "dir") {
+                printLine(`cat: ${file}: Is a directory`, outBox, false);
+             } else if (d.content[file].type === "exec") {
+                printLine(`cat: ${file}: cannot read executable binary`, outBox, false, "color-error");
+             } else {
+                let content = d.content[file].content;
+                // If the file content starts with TPL_, fetch the actual HTML from the hidden templates
+                if (content.startsWith("TPL_")) {
+                   let tplId = content.replace("TPL_", "tpl-").toLowerCase();
+                   if (tplId === 'tpl-door') tplId = 'tpl-door-ascii';
+                   else if (tplId === 'tpl-door_full') tplId = 'tpl-door-full';
+                   else if (tplId === 'tpl-about_khokha') tplId = 'tpl-about-khokha';
+                   else if (tplId === 'tpl-continue') tplId = 'tpl-continue';
+                   else if (tplId === 'tpl-recon') tplId = 'tpl-recon-ascii';
+                   else if (tplId === 'tpl-nmap') tplId = 'tpl-nmap-ascii';
+                   else if (tplId === 'tpl-5o5a') tplId = 'tpl-5o5a-text';
+                   
+                   const tplEl = document.getElementById(tplId);
+                   if (tplEl) printLine(tplEl.innerHTML, outBox, false);
+                   else printLine(`Error reading internal template.`, outBox, false);
+                } else {
+                   printLine(content, outBox, false); // Print raw string content
+                }
+             }
+          } else {
+             printLine(`cat: ${file}: No such file or directory`, outBox, false);
+          }
+          break;
+        case 'ping':
+          let pTarget = args[1];
+          if (!pTarget) { printLine(`Usage: ping <destination>`, outBox, false); break; }
+          
+          // Special response if they ping the target project concept
+          if (pTarget === 'al-darwaza') {
+             printLine(`PING al-darwaza (10.0.50.54) 56(84) bytes of data.<br>Request timeout for icmp_seq 1. The Darwaza is closed.<br>Request timeout for icmp_seq 2. The Darwaza is closed.`, outBox, false, "color-error");
+          } else {
+             printLine(`PING ${pTarget} (192.168.1.5) 56(84) bytes of data.<br>64 bytes from 192.168.1.5: icmp_seq=1 ttl=64 time=0.034 ms<br>64 bytes from 192.168.1.5: icmp_seq=2 ttl=64 time=0.041 ms<br>64 bytes from 192.168.1.5: icmp_seq=3 ttl=64 time=0.038 ms`, outBox, false);
+          }
+          break;
+        case 'nmap':
+          // Fake nmap response reinforcing the Zero Trust concept
+          printLine(`Starting Nmap 7.93 ( https://nmap.org )<br>Nmap scan report for target<br>Host is up (0.00012s latency).<br>All 1000 scanned ports on target are in ignored states.<br>Not shown: 1000 filtered tcp ports (no-response)<br><br>Nmap done: 1 IP address (1 host up) scanned in 1.24 seconds`, outBox, false, "color-accent");
+          break;
+        case 'sudo':
+          // Classic Linux warning
+          printLine(`guest is not in the sudoers file. This incident will be reported.`, outBox, false, "color-error");
+          break;
+        case './join_beta.sh':
+          // Executing this script actually opens the external link
+          printLine(`[+] Redirecting to beta registration form...`, outBox, false, "color-success");
+          setTimeout(() => { window.open('https://tally.so/r/Gx5XjQ', '_blank'); }, 600);
+          break;
+        default:
+          // Fallback errors
+          if (cmd.startsWith('./') && cmd !== './5054') {
+             printLine(`bash: ${cmd}: Permission denied or invalid format`, outBox, false);
+          } else {
+             printLine(`bash: ${cmd}: command not found`, outBox, false);
+          }
+          break;
+      }
+    }
+
+    /* ==========================================
+       KEYBOARD CONTROLS (Handling inputs across all boxes)
+       ========================================== */
+    document.querySelectorAll('.sub-input').forEach(inp => {
+      inp.addEventListener('keydown', (e) => {
+        // Arrow UP: Move back in history
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (cmdHistory.length > 0) {
+            historyIdx = Math.max(0, historyIdx - 1);
+            inp.value = cmdHistory[historyIdx];
+            inp.style.width = Math.max(1, inp.value.length) + 'ch';
+            setTimeout(() => inp.selectionStart = inp.selectionEnd = inp.value.length, 0); // Keep cursor at end
+          }
+        } 
+        // Arrow DOWN: Move forward in history
+        else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (historyIdx < cmdHistory.length - 1) {
+            historyIdx++;
+            inp.value = cmdHistory[historyIdx];
+          } else {
+            historyIdx = cmdHistory.length;
+            inp.value = ''; // Clear line if at the bottom of history
+          }
+          inp.style.width = Math.max(1, inp.value.length) + 'ch';
+          setTimeout(() => inp.selectionStart = inp.selectionEnd = inp.value.length, 0);
+        } 
+        // ENTER: Submit command
+        else if (e.key === 'Enter') {
+          const val = inp.value.trim();
+          
+          // Save to history if it's not empty
+          if (val) {
+             cmdHistory.push(val);
+             historyIdx = cmdHistory.length;
+          }
+          
+          // Clear input field visually
+          inp.value = '';
+          inp.style.width = '1ch';
+          
+          // Find out which terminal box this input belongs to
+          const wrapper = inp.closest('.input-line');
+          const termContainer = wrapper.closest('.interactive-area');
+          const termId = termContainer.dataset.termId;
+          const outBox = document.getElementById(`${termId}-output`);
+          
+          // Send to Brain
+          processCommand(termId, val, outBox, inp);
+          updateAllPrompts();
+        }
+      });
+    });
+
+    // Helper to hide the "[ i6la3 ]" skip button once a puzzle is solved
+    function hideSkipBtn(termId) {
+       const btn = document.getElementById(`${termId}-btn-wrapper`);
+       if(btn) btn.style.display = 'none';
+    }
+
+    /* ==========================================
+       PUZZLE COMPLETION HELPERS
+       These inject the success text once specific puzzles are beaten
+       ========================================== */
+    function solveQasr(outBox, termId) {
+       puzzleStates['qasr'].solved = true;
+       hideSkipBtn(termId);
+       const html = `
+        <div class="color-dim" style="margin-top:0.5rem; text-align:left;">guest@al-masmak:~$ [ ACCESS GRANTED. ]</div>
+        <div class="color-fg arabic-text" dir="rtl" style="margin-top:1.5rem; margin-bottom:0.5rem; text-align:right; line-height: 1.9;">
+        هذا قصر المصمك في الرياض، ومن هذي الصوره تعلمت عن الخوخة..<br><br>
+        قبل لا تتطور التكنولوجيا، كانت العمارة النجدية القديمة تعتمد على الدروازة كالباب الرئيسي الضخم ليكون مغلق تماما في وجه اي تهديد خارجي، وبوسطه كانوا يحطون باب صغير جداً يُسمى الخوخة. هذا الباب يظل مقفل تماما كخط دفاع اول في وجه اي تهديد خارجي ولا يُفتح الا للمصرح لهم.<br><br>
+        مشروعي يطبق نفس هذي الفلسفة المعمارية القديمة لكن بعالم الـ Zero Trust والامن السيبراني. اداة الخوخة تسمح لمدراء الانظمة باغلاق جميع المنافذ الحساسة مثل منفذ SSH واخفائها تماماً عن الانظار، لتبدو الشبكة مغلقة بالكامل امام اي فحص عشوائي. بمعنى نقفل الدروازة ونفتح خوخة رقمية مشفرة ومؤقتة بس للمصرح لهم يدخلون.<br><br>
+        لكن كيف يفتح الشخص المصرح له هذا الباب؟ ووش المشكلة اللي تحلها الخوخة؟ كيف اصلا تشتغل؟
+        </div>
+       `;
+       outBox.innerHTML += html;
+       updateAllPrompts();
+    }
+
+    function checkReconNmapDone(termId) {
+       // Only count the recon terminal as "solved" if BOTH commands were typed
+       if (puzzleStates['recon-nmap'].reconDone && puzzleStates['recon-nmap'].nmapDone) {
+          puzzleStates['recon-nmap'].solved = true;
+          hideSkipBtn(termId);
+       }
+    }
+
+    /* ==========================================
+       AUTO-SOLVE LOGIC 
+       Fired when user clicks the [ i6la3 ] button
+       ========================================== */
+    window.autoSolveTerminal = function(termId) {
+       const outBox = document.getElementById(`${termId}-output`);
+       const promptHTML = getPromptHTML(termId);
+       
+       if (termId === 'qasr' && !puzzleStates['qasr'].solved) {
+          printLine(`${promptHTML}al-masmak`, outBox, false); // Print the correct answer for them
+          solveQasr(outBox, termId);
+       } else if (termId === 'recon-nmap' && !puzzleStates['recon-nmap'].solved) {
+          if(!puzzleStates['recon-nmap'].reconDone) {
+            printLine(`${promptHTML}cat recon.txt`, outBox, false);
+            outBox.innerHTML += document.getElementById('tpl-recon-ascii').innerHTML;
+            puzzleStates['recon-nmap'].reconDone = true;
+          }
+          if(!puzzleStates['recon-nmap'].nmapDone) {
+            printLine(`${promptHTML}cat nmap.txt`, outBox, false);
+            outBox.innerHTML += document.getElementById('tpl-nmap-ascii').innerHTML;
+            puzzleStates['recon-nmap'].nmapDone = true;
+          }
+          checkReconNmapDone(termId);
+       } else if (termId === '5o5a' && !puzzleStates['5o5a'].solved) {
+          printLine(`${promptHTML}cat 5o5a.txt`, outBox, false);
+          outBox.innerHTML += document.getElementById('tpl-5o5a-text').innerHTML;
+          puzzleStates['5o5a'].solved = true;
+          hideSkipBtn(termId);
+       }
+       updateAllPrompts();
+    };
+
+    /* ==========================================
+       STAGE 1 INTRO PUZZLE PROGRESSION
+       Validates the sequence: il3ab -> ./5054 -> 72 -> 114 -> 201
+       ========================================== */
+    async function handleMainProgress(val, outBox) {
+       if (mainStep === 0 && val === 'il3ab') {
+          clearInterval(mainTimerInterval);
+          displayTimer.classList.remove('visible');
+          await typeText("[AL-3ASKARI] Perimeter monitor active.", outBox, 15, "color-error");
+          await typeText("Al-Darwaza is fortified against external threats.", outBox, 15, "color-error");
+          await typeText("Only the AL-5054 protocol can open the covert path.", outBox, 15, "color-error");
+          await typeText("[HINT] try: ./5054 or press [ i6la3 ] to skip.", outBox, 15, "color-dark");
+          mainStep = 1;
+       } 
+       else if (mainStep === 1 && val === './5054') {
+          const art = document.querySelector('#tpl-door-ascii').innerHTML; 
+          printLine(art, outBox, true);
+          await typeText("ifta7 ya simsim abwabik...♫⋆｡♪ ₊˚♬ ;)", outBox, 15);
+          printLine("<br>", outBox, true);
+          await typeText("Al-Khokha requires a steganographic sequence of three specific byte sizes to access this page.", outBox, 15, "color-dim");
+          await typeText("[HINT] A standard ICMP Ping payload in Windows is 32 bytes. Linux is 56 bytes. maybe try: 72, 114, 201 ... or press [ i6la3 ] to skip.", outBox, 15, "color-dark");
+          mainStep = 2; // Move state to expect Payload 1
+       }
+       else if (mainStep === 2 && val === '72') { mainStep = 3; }
+       else if (mainStep === 3 && val === '114') { mainStep = 4; }
+       else if (mainStep === 4 && (val === '201' || val === '202')) {
+          await triggerSuccess(outBox); // Win state
+       }
+       else {
+          // If they mess up the payload, reset back to expecting Payload 1
+          printLine(`[!] Invalid payload size. Sequence dropped.`, outBox, true, "color-error");
+          mainStep = 2;
+       }
+       updateAllPrompts(); // Update prompt text (e.g. "> Payload 1:")
+    }
+
+    // Auto-solves the main sequence step by step visually
+    window.executeAutoSolve = async function() {
+      if (autoSolving || hasCompletedInit) return;
+      autoSolving = true;
+      clearInterval(mainTimerInterval);
+      displayTimer.classList.remove('visible');
+      mainSkipBtn.classList.remove('visible');
+      
+      const inp = document.getElementById('main-input');
+      inp.disabled = true; // Block manual input while typing automatically
+      const outBox = document.getElementById('main-output');
+      
+      const delay = (ms) => new Promise(r => setTimeout(r, ms));
+      
+      if (mainStep === 0) {
+        printLine(`${getPromptHTML('main')}il3ab`, outBox);
+        await typeText("[AL-3ASKARI] Perimeter monitor active.", outBox, 10, "color-error");
+        await typeText("Al-Darwaza is fortified against external threats.", outBox, 10, "color-error");
+        await typeText("Only the AL-5054 protocol can open the covert path.", outBox, 10, "color-error");
+        await typeText("[HINT] try: ./5054 or press [ i6la3 ] to skip.", outBox, 10, "color-dark");
+        mainStep = 1;
+        updateAllPrompts();
+        await delay(800);
+      }
+      if (mainStep === 1) {
+        printLine(`${getPromptHTML('main')}./5054`, outBox);
+        const art = document.querySelector('#tpl-door-ascii').innerHTML; 
+        printLine(art, outBox);
+        await typeText("ifta7 ya simsim abwabik...♫⋆｡♪ ₊˚♬ ;)", outBox, 10);
+        printLine("<br>", outBox);
+        await typeText("Al-Khokha requires a steganographic sequence of three specific byte sizes to access this page.", outBox, 10, "color-dim");
+        await typeText("[HINT] A standard ICMP Ping payload in Windows is 32 bytes. Linux is 56 bytes. maybe try: 72, 114, 201 ... or press [ i6la3 ] to skip.", outBox, 10, "color-dark");
+        mainStep = 2;
+        updateAllPrompts();
+        await delay(800);
+      }
+      if (mainStep === 2) {
+        printLine(`${getPromptHTML('main')}72`, outBox);
+        mainStep = 3;
+        updateAllPrompts();
+        await delay(400);
+      }
+      if (mainStep === 3) {
+        printLine(`${getPromptHTML('main')}114`, outBox);
+        mainStep = 4;
+        updateAllPrompts();
+        await delay(400);
+      }
+      if (mainStep === 4) {
+        printLine(`${getPromptHTML('main')}201`, outBox);
+        await triggerSuccess(outBox);
+      }
+      inp.disabled = false;
+    }
+
+    // Handles the transition from the Stage 1 Hacker Game to the Stage 2 Article
+    async function triggerSuccess(outBox) {
+      hasCompletedInit = true;
+      mainSkipBtn.classList.remove('visible'); // hide the top skip button
+      
+      await typeText("[*] Dispatching steganographic payloads...", outBox, 15, "color-dim");
+      await typeText("[!] Anomaly detected: Protocol Khokha initiated.", outBox, 15, "color-error");
+      await typeText("[+] Sequence 72 -> 114 -> 201 verified.", outBox, 15, "color-success");
+      await typeText("[+] Al-Darwaza bypassed. Covert tunnel established. kafo.", outBox, 15, "color-success");
+      await typeText("[+] Bismillah. Welcome to Al-Khokha, a tool by Dana Alakail.", outBox, 15, "color-success");
+      printLine("<br>", outBox);
+      await typeText("[SYSTEM] You now have root access to the project files.", outBox, 15);
+
+      // Create countdown inline text for the transition
+      const transitionLine = document.createElement('div');
+      transitionLine.className = 'term-line color-accent';
+      outBox.appendChild(transitionLine);
+      window.scrollTo(0, document.body.scrollHeight);
+      
+      let cd = 3;
+      transitionLine.innerHTML = `7AYAKOM ALLAH... [${cd}s]`;
+      
+      const cdInterval = setInterval(() => {
+        cd--;
+        if (cd > 0) {
+          transitionLine.innerHTML = `7AYAKOM ALLAH... [${cd}s]`;
+        } else {
+          transitionLine.innerHTML = `7AYAKOM ALLAH...`;
+          clearInterval(cdInterval);
+          // Show the arrow to let them navigate back down later
+          document.getElementById('down-arrow-container').style.display = 'block';
+          updateAllPrompts(); // Reset intro prompt to standard guest@...
+          switchView('article'); // Fade to article
+        }
+      }, 1000);
+    }
+
+    /* VIEW SWITCHER 
+       Handles the CSS fade animations between the game container and article container
+    */
+    window.switchView = function(target) {
+      if (target === 'article') {
+        gameContainer.style.opacity = '0';
+        setTimeout(() => {
+          gameContainer.style.display = 'none';
+          articleContainer.style.display = 'block';
+          void articleContainer.offsetWidth; // Force browser reflow to reset transition state
+          articleContainer.style.opacity = '1';
+          window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+        }, 800);
+      } else if (target === 'game') {
+        articleContainer.style.opacity = '0';
+        setTimeout(() => {
+          articleContainer.style.display = 'none';
+          gameContainer.style.display = 'flex';
+          void gameContainer.offsetWidth; 
+          gameContainer.style.opacity = '1';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 800);
+      }
+    }
+
+    /* INITIAL BOOT SEQUENCE 
+       Starts the page, sets prompts, and begins the 60 second countdown timer.
+    */
+    async function initGame() {
+      updateAllPrompts();
+      displayTimer.classList.add('visible');
+      mainSkipBtn.classList.add('visible');
+      
+      mainTimerInterval = setInterval(() => {
+        if(autoSolving || hasCompletedInit) return;
+        mainCountdown--;
+        displayTimer.innerText = `${mainCountdown}s`;
+        if(mainCountdown <= 0) {
+          clearInterval(mainTimerInterval);
+          displayTimer.classList.remove('visible');
+          executeAutoSolve(); // Force auto-solve if time runs out
+        }
+      }, 1000);
+
+      const outBox = document.getElementById('main-output');
+      await typeText("[!] AL-DARWAZA: CONNECTION DROPPED. YOU HAVE BEEN GHOSTED.", outBox, 20, "color-error");
+      await typeText("[X] Unauthorized access. Initiating automated guest routing in 60s...", outBox, 20, "color-dim");
+      await typeText("[?] Type 'il3ab' to play the game... or press [ i6la3 ] to skip.", outBox, 20, "color-accent");
+      
+      // Reveal the input field after boot message finishes
+      document.getElementById('main-input-wrapper').classList.remove('template');
+      document.getElementById('main-input').focus();
+    }
+
+    // Fire the boot sequence when the browser is fully loaded
+    window.onload = initGame;
+  </script>
+</body>
+</html>

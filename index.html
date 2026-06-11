@@ -4,15 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>dana_alakail@riyadh:~ $</title>
-  <meta name="description" content="Cybersecurity portfolio — Coming Soon." />
+  <meta name="description" content="Dana Alakail - Cybersecurity Student @ KSU" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Kufi+Arabic:wght@300;400;600&display=swap" rel="stylesheet" />
 
   <style>
-    /* ============================================================
-       TOKENS
-    ============================================================ */
     :root, [data-theme="dark"] {
       --bg:        #170005;
       --bg-raised: #290a14;
@@ -42,8 +39,7 @@
       --hi:        #d2d5cf;
     }
 
-    /* ============================================================ RESET */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     ::selection { background: var(--hi); color: var(--fg); }
     html { scroll-behavior: smooth; }
 
@@ -57,51 +53,107 @@
       display: flex;
       flex-direction: column;
       transition: background-color .35s ease, color .35s ease;
-      /* Removed overflow-x: hidden to fix iOS pinch-zoom navbar clipping bug */
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     }
 
-    /* ============================================================ LAYOUT */
-    .site-wrapper { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    /* Terminal Semantic Colors for the Typewriter */
+    .color-dim { color: var(--dim); }
+    .color-accent { color: var(--accent); text-decoration: underline; text-decoration-style: dashed; }
+    .color-success { color: var(--success); font-weight: bold; }
+    .color-fg { color: var(--fg); }
+    .color-dir { color: var(--dir); font-weight: bold; text-decoration: underline;}
 
-    /* ============================================================ TERMINAL BLOCK */
-    .term-block {
-      background: var(--bg-sunken); border: 1px solid var(--border);
-      border-radius: 2px; overflow: hidden; margin: 1rem 0; width: 100%;
-    }
-    .term-titlebar {
-      background: var(--bg-raised); border-bottom: 1px solid var(--border);
-      padding: .45rem 1rem; display: flex; align-items: center; gap: .75rem;
-      font-size: .68rem; color: var(--dim);
-    }
-    .term-dots { display: flex; gap: .4rem; }
-    .term-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); display: block; }
-    .term-title { flex: 1; text-align: center; }
-    .term-body { padding: 1.25rem 1.5rem; font-size: .8rem; line-height: 1.8; }
-
-    /* ============================================================ PROMPT LINE */
-    .prompt-line { display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap; }
-    .p-host   { color: var(--dir);    font-weight: 600; }
-    .p-sep    { color: var(--dim); }
-    .p-path   { color: var(--accent); }
-    .p-dollar { color: var(--fg); }
-
-    /* ============================================================ CURSOR */
-    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
-    .cursor {
-      display: inline-block; width: .55em; height: 1em;
-      background: var(--cursor); vertical-align: text-bottom;
-      animation: blink 1.1s step-end infinite;
+    .site-wrapper { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    
+    section { padding: 3rem 0; position: relative; }
+    
+    .sadu-divider {
+      text-align: center;
+      color: var(--dim);
+      font-family: 'JetBrains Mono', monospace;
+      opacity: 0.3;
+      font-size: 0.75rem;
+      margin: 1.5rem auto;
+      user-select: none;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 60%;
+      letter-spacing: 0.1em;
     }
 
-    /* ============================================================ ANIMATIONS */
-    @keyframes fadeSlide { to { opacity:1; transform:translateY(0); } }
+    .sec-title { font-size: 1rem; color: var(--dir); margin-bottom: 1.5rem; }
+    /* Styling for clickable section titles */
+    .sec-title a {
+      color: inherit; /* Keeps your custom --dir pink/peach color */
+      text-decoration: none; /* Removes the default underline */
+      transition: all 0.2s ease;
+      padding: 0.1rem 0.4rem; /* Adds a little padding for the hover box */
+      margin-left: -0.4rem; /* Pulls it back so it aligns perfectly with the left edge */
+      border-radius: 2px;
+    }
 
+    /* The hover effect */
+    .sec-title a:hover {
+      background-color: var(--accent);
+      color: var(--bg); /* Inverts the color so the text becomes dark against a light block */
+      text-decoration: none;
+    }
+
+    /* ============================================================ UNIVERSAL TOOLTIPS */
+    .has-tooltip {
+      position: relative;
+      cursor: help;
+    }
+    .has-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-raised);
+      color: var(--fg);
+      padding: 0.3rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      margin-top: 0.5rem;
+      font-family: 'JetBrains Mono', 'Noto Kufi Arabic', monospace;
+      font-size: 0.75rem;
+      z-index: 1000;
+      font-weight: 400;
+      letter-spacing: normal;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .has-tooltip:hover::after {
+      opacity: 1;
+    }
+    /* Terminal-specific tooltip sizing */
+    .has-tooltip.term-tooltip::after {
+      font-size: 0.65rem;      /* Smaller text */
+      padding: 0.2rem 0.4rem;  /* Tighter padding */
+      margin-top: 0.3rem;      /* Closer to the text */
+    }
+
+    /* Modifiers to prevent edge clipping */
+    .has-tooltip.tooltip-left::after {
+      left: 0;
+      transform: translateX(0); /* Aligns the left edge of the tooltip with the text */
+    }
+
+    .has-tooltip.tooltip-right::after {
+      left: auto;
+      right: 0;
+      transform: translateX(0); /* Aligns the right edge of the tooltip with the text */
+    }
     /* ============================================================ NAV */
     .site-nav {
       position: sticky; top: 0; z-index: 100;
-      width: 100%; /* Ensures the blurred background stretches fully */
-      border-bottom: 1px solid var(--border); padding: .75rem 0;
+      width: 100%; 
+      border-bottom: 1px solid var(--border); 
+      padding: 1rem 0; 
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       background: color-mix(in srgb, var(--bg) 88%, transparent);
       transition: background-color .35s ease;
@@ -111,12 +163,25 @@
       display: flex; align-items: center; justify-content: space-between;
       gap: 1rem; flex-wrap: wrap;
     }
-    .nav-logo { text-decoration: none; font-weight: 700; font-size: .78rem; letter-spacing: .02em; color: var(--fg); }
+    .nav-logo { 
+      text-decoration: none; font-weight: 700; 
+      font-size: .85rem; 
+      letter-spacing: .02em; color: var(--fg); 
+    }
     .nav-logo .nh { color: var(--dir); }
     .nav-logo .ns { color: var(--dim); }
     .nav-logo .np { color: var(--accent); }
 
-    .nav-right { display: flex; align-items: center; gap: .75rem; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+    .nav-link {
+      color: var(--dim);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      transition: color .2s;
+    }
+    .nav-link:hover { color: var(--fg); }
 
     .theme-toggle {
       background: none; border: 1px solid var(--border); color: var(--dim);
@@ -131,8 +196,11 @@
       font-size: 0.68rem;
       color: var(--dim);
       letter-spacing: 0.05em;
-      margin-right: 0.5rem;
       white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+      #linux-clock { display: none; }
     }
 
     /* ============================================================ TOAST */
@@ -147,74 +215,190 @@
     }
     #theme-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ============================================================ BOOT */
-    #boot-screen {
-      position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity .6s ease;
-    }
-    #boot-screen.done { opacity: 0; pointer-events: none; }
-    .boot-inner { max-width: 600px; width: 90%; font-size: .78rem; }
-    .boot-line { color: var(--dim); margin-bottom: .18rem; opacity: 0; animation: fadeSlide .15s ease forwards; }
-    .boot-line.ok     { color: var(--accent); }
-    .boot-line.hi     { color: var(--fg); font-weight: 700; }
-    .boot-line.arabic { font-family: 'Noto Kufi Arabic', monospace; color: var(--dir); font-size: 1rem; margin-top: .6rem; }
-
-    /* ============================================================ HERO & TERMINAL */
-    #hero { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 0; width: 100%; max-width: 100vw; }
-    
-    .ascii-wrap {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 2.5rem;
-      width: 100%;
-    }
-    
+    /* ============================================================ ASCII */
+    .ascii-wrap { display: flex; justify-content: center; margin: 2rem 0; overflow-x: auto; }
     #ascii-container {
-      font-family: monospace;
-      white-space: pre;
-      /* Upped the minimum font size slightly for visibility */
-      font-size: clamp(4px, 1.6vw, 6px); 
-      line-height: 1;
-      /* Removed letter-spacing to allow clean scaling without breaking layout */
-      color: var(--fg);
-      user-select: none;
-      text-align: left;
+      font-family: monospace; white-space: pre; font-size: clamp(4px, 1.6vw, 6px); 
+      line-height: 1; color: var(--fg); user-select: none; text-align: left;
     }
 
-    .term-output {
-      font-size: 0.75rem; 
-      line-height: 1.7; color: var(--accent);
+    /* ============================================================ TERMINAL UI */
+    .term-block {
+      background: var(--bg-sunken); border: 1px solid var(--border);
+      border-radius: 2px; overflow: hidden; margin: 1rem 0; width: 100%;
     }
-    .term-output-line { margin-bottom: .05rem; }
+    .term-titlebar {
+      background: var(--bg-raised); border-bottom: 1px solid var(--border);
+      padding: .45rem 1rem; display: flex; align-items: center; gap: .75rem;
+      font-size: .68rem; color: var(--dim);
+    }
+    .term-dots { display: flex; gap: .4rem; }
+    .term-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    .term-title { flex: 1; text-align: center; }
+    .term-body { padding: 1.25rem 1.5rem; font-size: .8rem; line-height: 1.8; overflow-y: auto; }
+    
+    .prompt-line { display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap; }
+    .p-host   { color: var(--dir); font-weight: 600; }
+    .p-sep    { color: var(--dim); }
+    .p-path   { color: var(--accent); }
+    .p-dollar { color: var(--fg); }
+    .p-cmd    { color: var(--fg); }
+    
+    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+    .cursor { display: inline-block; width: .55em; height: 1em; background: var(--cursor); vertical-align: text-bottom; animation: blink 1.1s step-end infinite; }
+    .cursor.static { animation: none; opacity: 1; }
 
-    .coming-soon-ascii {
-      color: var(--fg);
-      font-weight: 700;
-      font-size: clamp(7px, 2.2vw, 14px); 
+    /* Interactive Input */
+    .term-input-row { display: flex; align-items: center; gap: .4rem; margin-top: .5rem; }
+    .term-input-raw { background: transparent; border: none; outline: none; color: var(--fg); font-family: 'JetBrains Mono', monospace; font-size: .8rem; flex: 1; caret-color: var(--cursor); min-width: 0; }
+
+    /* ============================================================ HEX DUMP PROJECTS */
+    .hex-container { 
+      background: transparent; 
+      padding: 1rem 0; 
+      border: none; 
+      border-radius: 2px;
+    }
+    .hex-context-note {
+      text-align: center;
+      color: var(--dim);
+      font-size: 0.75rem;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+    .hex-row { 
+      display: flex; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.8rem; 
+      margin-bottom: 0.85rem; 
+      align-items: center; 
+      justify-content: center;
+    }
+    .hex-row:last-child { margin-bottom: 0; }
+    .hex-offset { 
+      color: var(--dim); 
+      opacity: 0.6;
+      width: 70px;
+      flex-shrink: 0;
+    }
+    .hex-bytes { 
+      color: var(--dim); 
+      margin-right: 1.5rem; 
+      letter-spacing: 0.15rem; 
+      user-select: none; 
+    }
+    .hex-text { 
+      flex-shrink: 0;
+    }
+    .project-link { 
+      display: inline-block;
+      width: 280px; 
+      text-align: center; 
+      color: var(--accent); 
+      text-decoration: none; 
+      border: 1px solid var(--border);
+      background: var(--bg-raised);
+      padding: 0.4rem 0.75rem;
+      border-radius: 2px;
+      transition: all 0.2s; 
+      font-weight: 600;
+      box-sizing: border-box;
+    }
+    .project-link:hover { 
+      background: var(--accent); 
+      color: var(--bg);
+      border-color: var(--accent);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    @media (max-width: 768px) {
+      .hex-bytes { display: none; } 
+      .hex-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+        border-bottom: 1px dashed var(--border);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+      .hex-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0;}
+      .hex-offset { width: auto; font-size: 0.75rem; text-align: center; }
+      .project-link { width: 100%; font-size: 0.8rem; padding: 0.6rem 0; }
+      .hex-text { width: 100%; }
+    }
+
+    /* ============================================================ CERTS MAN PAGES */
+    .cert-controls { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.5rem; }
+    .cert-btn { background: none; border: none; color: var(--dim); font-family: inherit; font-size: 0.8rem; cursor: pointer; transition: color 0.2s; }
+    .cert-btn:hover { color: var(--fg); }
+    .cert-content { min-height: 380px; }
+    
+    .cert-ascii { 
+      color: var(--dir); 
+      font-weight: bold; 
+      /* Added margins to center the block, and fit-content to shrink wrap it */
+      margin: 0 auto 1.5rem auto; 
+      width: fit-content;
+      text-align: left; /* Keeps ASCII aligned properly internally */
+      white-space: pre; 
+      overflow-x: auto; 
+      font-size: clamp(6px, 1.2vw, 10px); 
       line-height: 1.2;
-      white-space: pre;
-      overflow-x: hidden;
-      margin: 1rem 0;
     }
+    
+    .man-header { color: var(--accent); font-weight: bold; margin-top: 1rem; }
+    .man-indent { padding-left: 2rem; color: var(--dim); }
+    .pgp-block { color: var(--dim); font-size: 0.7rem; opacity: 0.7; margin-top: 1.5rem; }
+
+    /* ============================================================ GREP POSTS */
+    .grep-bar { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; background: var(--bg-raised); padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 2px; }
+    .grep-input-raw { background: transparent; border: none; outline: none; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: .8rem; width: 120px; caret-color: var(--cursor); pointer-events: none;}
+
+    /* ============================================================ SKILLS STAR GRAPH (OBSIDIAN STYLE) */
+    #graph-container { 
+      width: 100%; 
+      height: 450px; 
+      background: transparent; 
+      border: none; 
+      position: relative; 
+      overflow: visible; 
+    }
+    
+    .link { stroke: var(--dim); stroke-opacity: 0.15; stroke-width: 0.8px; stroke-dasharray: 4, 4; transition: stroke-opacity 0.2s ease, stroke 0.2s ease; }
+    .link.highlight { stroke: var(--fg); stroke-opacity: 0.8; stroke-width: 1.5px; filter: drop-shadow(0 0 4px var(--fg)); stroke-dasharray: none;}
+    .link.dimmed { stroke-opacity: 0.03; }
+    
+    .node { fill: var(--dim); opacity: 0.7; cursor: grab; transition: fill 0.2s ease, filter 0.2s ease, opacity 0.2s ease; }
+    .node:active { cursor: grabbing; }
+    .node.highlight { fill: var(--fg); opacity: 1; filter: drop-shadow(0 0 10px var(--fg)); }
+    .node.dimmed { opacity: 0.1; }
+    
+    .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--fg); pointer-events: none; opacity: 0.15; transition: opacity 0.2s ease, text-shadow 0.2s ease; }
+    .label.highlight { opacity: 1; font-weight: bold; fill: var(--fg); text-shadow: 0px 2px 4px var(--bg), 0px -2px 4px var(--bg); }
+    .label.dimmed { opacity: 0.05; }
+    
+    .interactive-note { text-align: center; color: var(--dim); font-size: 0.75rem; margin-top: 1.5rem; font-style: italic; line-height: 1.8; font-family: 'JetBrains Mono', 'Noto Kufi Arabic', monospace; }
+
+    /* ============================================================ FOOTER / CONTACT */
+    #typer-container { margin-top: 1rem; font-size: 0.8rem; min-height: 150px;}
+    .cmd-output a { transition: all 0.2s; }
+    .cmd-output a:hover { color: var(--dir); border-bottom: 1px solid var(--dir); }
+    .bottom-bar { border-top: 1px dashed var(--border); padding: 1.5rem 0; margin-top: 2rem; font-size: 0.75rem; text-align: center; color: var(--dim); }
 
   </style>
 </head>
 
 <body>
 
-<div id="boot-screen" aria-hidden="true">
-  <div class="boot-inner" id="boot-lines"></div>
-</div>
-
 <div id="theme-toast" role="status" aria-live="polite"></div>
 
 <nav class="site-nav" aria-label="Main navigation">
   <div class="nav-inner">
     <a href="#" class="nav-logo" aria-label="Home">
-      <span class="nh" id="nav-host">dana_alakail</span><span class="ns">@</span><span class="np">riyadh</span><span class="ns">:</span><span class="np">~</span><span class="ns"> $</span>
+      <span class="nh" id="nav-host">dana_alakail</span><span class="ns">@</span><span class="np has-tooltip" data-tooltip="اااههه ما ارق الياااض">riyadh</span><span class="ns">:</span><span class="np has-tooltip" data-tooltip="البيت بيتكم">~</span><span class="ns"> $</span>
     </a>
     <div class="nav-right">
+      <a href="search.html" class="nav-link has-tooltip" data-tooltip='grep -r "خيييررر؟ وش تدور؟؟"'>./search</a>
       <div id="linux-clock" aria-hidden="true"></div>
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark theme">[9aba7 mode]</button>
     </div>
@@ -228,73 +412,134 @@
       <div id="ascii-container" aria-hidden="true"></div>
     </div>
 
+  <section id="initiation">
+    <div class="term-block" id="explore-terminal">
+      <div class="term-titlebar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <span class="term-title">initiation.sh</span>
+      </div>
+      <div class="term-body" id="term-1-body">
+        <div id="term-output" aria-live="polite"></div>
+        <div class="term-input-row" id="term-input-row" style="display:none;">
+          <span class="p-host" id="shell-host">danas_guest@riyadh</span><span class="p-sep">:</span><span class="p-path">~</span><span class="p-dollar">&nbsp;$&nbsp;</span>
+          <input type="text" id="term-input" class="term-input-raw" autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+    </div>
+    <div class="interactive-note">
+      - help هذا الجزء تفاعلي، اكتب  -<br>
+      - this is an interactive element, type help -
+    </div>
+  </section>
+  <div class="sadu-divider" aria-hidden="true">/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\</div>
+
+  <section id="projects">
+    <h2 class="sec-title"><a href="">./projects</a></h2>
+    <div class="hex-container">
+      <div class="hex-context-note">// 3 project executables found in memory. Click button to execute/view.</div>
+      
+      <div class="hex-row">
+        <div class="hex-offset has-tooltip" data-tooltip="Zero Trust Steganography Tool">0x000000</div>
+        <div class="hex-bytes">41 6c 2d 4b 68 6f 6b 68 61 2e 73 68 2e</div>
+        <div class="hex-text"><a href="al-khokha.html" class="project-link">[ EXECUTE: ./Al-Khokha ]</a></div>
+      </div>
+      
+      <div class="hex-row">
+        <div class="hex-offset has-tooltip" data-tooltip="Bash & Python Recon Pipelines">0x000010</div>
+        <div class="hex-bytes">41 75 74 6f 6d 61 74 69 6f 6e 53 63 72</div>
+        <div class="hex-text"><a href="#" class="project-link">[ EXECUTE: ./Automation_Scripts ]</a></div>
+      </div>
+
+      <div class="hex-row">
+        <div class="hex-offset has-tooltip" data-tooltip="Custom Vulnerable Environments">0x000020</div>
+        <div class="hex-bytes">43 54 46 5f 43 68 61 6c 6c 65 6e 67 65</div>
+        <div class="hex-text"><a href="#" class="project-link">[ EXECUTE: ./CTF_Challenges ]</a></div>
+      </div>
+
+    </div>
+  </section>
+  <div class="sadu-divider" aria-hidden="true">/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\</div>
+
+  <section id="certifications">
+    <h2 class="sec-title">./certifications.sh</h2>
+    
     <div class="term-block">
       <div class="term-titlebar">
         <div class="term-dots"><span></span><span></span><span></span></div>
-        <span class="term-title">terminal — setup.sh</span>
+        <span class="term-title">certifications.sh</span>
       </div>
       <div class="term-body">
-        <div class="term-output" id="term-output" aria-live="polite"></div>
+        <div class="cert-content" id="cert-content">
+          </div>
+        <div class="cert-controls">
+          <button class="cert-btn" id="cert-prev">&lt;&lt; PREV</button>
+          <span style="color:var(--dim); font-size:0.7rem;">[ Click arrows to view other certifications ]</span>
+          <button class="cert-btn" id="cert-next">NEXT &gt;&gt;</button>
+        </div>
       </div>
     </div>
   </section>
+  <div class="sadu-divider" aria-hidden="true">/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\</div>
+
+  <section id="skills">
+    <h2 class="sec-title"><span class="has-tooltip" data-tooltip="بشمهندسة">./skills</span></h2>
+    <div id="graph-container"></div>
+    <div class="interactive-note">
+      - ! هذا الجزء تفاعلي، حرك النجوم وشف مهاراتي -<br>
+      - this is an interactive element, move the stars to view my skills! -
+    </div>
+  </section>
+  <div class="sadu-divider" aria-hidden="true">/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\</div>
+
+  <section id="posts">
+    <h2 class="sec-title"><a href="search.html">./posts</a></h2>
+    <div class="grep-bar">
+      <span class="p-host">danas_guest@riyadh</span><span class="p-sep">:</span><span class="p-path">~</span><span class="p-dollar"> $ </span>
+      <span class="p-cmd">grep -r "</span>
+      <input type="text" class="grep-input-raw" value="               " disabled/>
+      <span class="p-cmd">" ./posts/</span>
+    </div>
+    <div style="margin-top: 1rem; color: var(--dim); padding-left: 0.5rem;">
+      <p style="margin-top: 1rem;">> writeups, resources, & cheatsheets coming soon...</p>
+    </div>
+  </section>
+  <div class="sadu-divider" aria-hidden="true">/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\</div>
+
+  <section id="contact">
+    <h2 class="sec-title"><span class="has-tooltip" data-tooltip="الووووووو؟">./contact</span></h2>
+    <div id="typer-container" aria-live="polite"></div>
+  </section>
+
 </main>
+
+<footer class="bottom-bar">
+  aloooo? contact me! 
+  <a href="mailto:dana.alakail@gmail.com" class="has-tooltip" data-tooltip='echo "Hello" | nc dana_alakail 25' style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ EMAIL ]</a> 
+  <a href="https://linkedin.com/in/dana-alakail" style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ LINKEDIN ]</a> 
+  <a href="https://x.com/aaakllld" style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ X ]</a>
+  <a href="https://github.com/aaaklld" class="has-tooltip" data-tooltip='git commit -m "لا تسرق اكوادي..."' style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ GITHUB ]</a>
+</footer>
+
 
 <script>
 'use strict';
 
-/* ============================================================
-   1. LINUX TEXT CLOCK
-============================================================ */
+
 (function linuxClock() {
   const clock = document.getElementById('linux-clock');
   if (!clock) return;
-  setInterval(() => {
+  
+  function updateTime() {
     const d = new Date();
     const opts = { timeZone: 'Asia/Riyadh', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
     const timeStr = d.toLocaleString('en-GB', opts).replace(',', '');
     clock.textContent = `[ ${timeStr} AST ]`;
-  }, 1000);
+  }
+  
+  setInterval(updateTime, 1000);
+  updateTime(); 
 })();
 
-/* ============================================================
-   2. BOOT SEQUENCE
-============================================================ */
-(function bootSequence() {
-  const screen    = document.getElementById('boot-screen');
-  const container = document.getElementById('boot-lines');
-  const hour      = new Date().getHours();
-  const isEvening = hour >= 18 || hour < 5;
-
-  const arabicLine = isEvening
-    ? 'مساء الخير — Masa al-Khair. Night Mode Active.'
-    : 'صباح الخير — Sabah al-Khair. System Online.';
-
-  const lines = [
-    { text: 'BIOS v2.4.0 — KSA Secure Boot initialized',      cls: '',      delay: 80   },
-    { text: '[ OK ] Loading kernel modules...',                cls: 'ok',    delay: 280  },
-    { text: '[ OK ] Establishing secure context...',           cls: 'ok',    delay: 460  },
-    { text: '[ OK ] Initializing build environment...',        cls: 'ok',    delay: 620  },
-    { text: '[ OK ] Loading cultural config: KSA_locale...',   cls: 'ok',    delay: 800  },
-    { text: '[ OK ] All systems nominal.',                     cls: 'hi',    delay: 1100 },
-    { text: arabicLine,                                        cls: 'arabic',delay: 1350 },
-  ];
-
-  lines.forEach(({ text, cls, delay }) => {
-    const el = document.createElement('p');
-    el.textContent = text;
-    el.className   = 'boot-line' + (cls ? ' ' + cls : '');
-    el.style.animationDelay = delay + 'ms';
-    container.appendChild(el);
-  });
-
-  setTimeout(() => screen.classList.add('done'), 2400);
-  setTimeout(() => screen.remove(),               3000);
-})();
-
-/* ============================================================
-   3. THEME TOGGLE
-============================================================ */
 (function themeToggle() {
   const btn   = document.getElementById('theme-toggle');
   const toast = document.getElementById('theme-toast');
@@ -313,20 +558,20 @@
     
     btn.textContent = next === 'dark' ? '[9aba7 mode]' : '[Masa2 mode]';
 
-    const msg = next === 'dark'
-      ? 'system_mode = midnight_in_riyadh ... Masa2 al 5air!'
-      : 'system_mode = morning_in_riyadh ... 9aba7 al 5air!';
+    if(toast) {
+      const msg = next === 'dark'
+        ? 'system_mode = midnight_in_riyadh ... Masa2 al 5air!'
+        : 'system_mode = morning_in_riyadh ... 9aba7 al 5air!';
 
-    toast.textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(timer);
-    timer = setTimeout(() => toast.classList.remove('show'), 3500);
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(timer);
+      timer = setTimeout(() => toast.classList.remove('show'), 3500);
+    }
   });
 })();
 
-/* ============================================================
-   4. ASCII ART RENDERER
-============================================================ */
+
 (function renderAscii() {
   const img = document.getElementById('source-image');
   const container = document.getElementById('ascii-container');
@@ -335,8 +580,6 @@
   img.onload = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
-    // Upped the mobile width to 100 to restore high detail
     const asciiWidth = window.innerWidth < 640 ? 100 : 120; 
     
     const scale = asciiWidth / img.width;
@@ -376,42 +619,34 @@
   if(img.complete) img.onload();
 })();
 
-/* ============================================================
-   5. COMING SOON GHOST TYPER
-============================================================ */
-(function comingSoonTerminal() {
-  const output = document.getElementById('term-output');
-  if (!output) return;
+(function interactiveTerminal() {
+  const output    = document.getElementById('term-output');
+  const inputRow  = document.getElementById('term-input-row');
+  const input     = document.getElementById('term-input');
+  const shellHost = document.getElementById('shell-host');
 
-  const asciiText = `
-   ____ ___  __  __ ___ _   _  ____   ____   ___   ___  _   _ 
-  / ___/ _ \\|  \\/  |_ _| \\ | |/ ___| / ___| / _ \\ / _ \\| \\ | |
- | |  | | | | |\\/| || ||  \\| | |  _  \\___ \\| | | | | | |  \\| |
- | |__| |_| | |  | || || |\\  | |_| |  ___) | |_| | |_| | |\\  |
-  \\____\\___/|_|  |_|___|_| \\_|\\____| |____/ \\___/ \\___/|_| \\_|
-`;
+  let cmdHistory = [];
+  let histIdx    = -1;
+  let promptName = 'dana_alakail@riyadh';
 
-  const socialLinksHTML = `
-    <div style="display: flex; flex-direction: column; gap: 0.35rem; padding-left: 1rem; border-left: 2px solid var(--border); margin-bottom: 1.2rem; font-family: inherit;">
-      <a href="https://linkedin.com/in/dana-alakail" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ LINKEDIN ] dana-alakail</a>
-      <a href="#" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ EMAIL ] dana.alakail@gmail.com </a>
-      <a href="https://twitter.com/aaakllld" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ X ] @aaakllld</a>
-      <a href="https://github.com/aaaklld" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ GITHUB ] aaaklld</a>
-      <a href="#" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ DISCORD ] aaaklld</a>
-    </div>
-  `;
 
-  const steps = [
-    { delay: 2600, type: 'type', text: 'cat comingsoon.txt', prompt: 'dana_alakail@riyadh' },
+
+const steps = [
+    { delay: 800, type: 'type', text: 'cat dana.txt', prompt: 'dana_alakail@riyadh' },
     { delay: 400, type: 'enter' },
-    { delay: 200, type: 'print', text: `<div class="coming-soon-ascii">${asciiText}</div>` },
-    { delay: 600, type: 'print', text: `<span style="color:var(--success);display:block;margin-bottom:0.5rem;">[ STATUS ] System architecture undergoing major overhaul.</span>` },
-    { delay: 400, type: 'print', text: `<span style="color:var(--accent);display:block;margin-bottom:1rem;">Studying, writing writeups, securing systems... see you soon ;)</span>` },
-    { delay: 800, type: 'type', text: 'cat findme.txt', prompt: 'dana_alakail@riyadh' },
-    { delay: 400, type: 'enter' },
-    { delay: 300, type: 'print', text: `<span style="color:var(--dir); display:block; margin-bottom: 0.75rem; font-family: 'JetBrains Mono', 'Noto Kufi Arabic', monospace;" dir="rtl">موقعي لسه قيد الإنشاء… وش رايك تزورني هنا:</span>` },
-    { delay: 200, type: 'print', text: socialLinksHTML },
-    { delay: 800, type: 'type', text: '', prompt: 'dana_alakail@riyadh' } // Leaves a blinking cursor prompt
+    { delay: 100, type: 'print', text: `<span style="color:var(--dim)">[ ROLE ]</span>         <span style="color:var(--fg)">Cybersecurity BSc Student @ KSU</span>
+<span style="color:var(--dim)">[ LOCATION ]</span>     <span style="color:var(--fg)">Riyadh</span>
+<span style="color:var(--dim)">[ CORE_FOCUS ]</span>   <span style="color:var(--fg)">Active Defense & Deception Engineering</span>
+<span style="color:var(--dim)">[ METHODOLOGY ]</span>  <span style="color:var(--fg)">Manipulating adversaries and engineering deceptive environments; heavily integrating traditional Najdi metaphors into modern digital security.</span>
+
+<span style="color:var(--accent)">[ BACKGROUND_DAEMONS ]</span>
+  <span style="color:var(--dim)">└──</span> Managing initiatives & volunteering within the KSU tech community (Future Technology Club & Cybersecurity Club)
+
+<span style="color:var(--dim)"><a href="mailto:dana.alakail@gmail.com" class="has-tooltip term-tooltip tooltip-left" data-tooltip='echo "Hello" | nc dana_alakail 25' style="color:var(--fg); text-decoration:none;">[ EMAIL ]</a> . <a href="https://linkedin.com/in/dana-alakail" target="_blank" style="color:var(--fg); text-decoration:none;">[ LINKEDIN ]</a> . <a href="https://x.com/aaakllld" target="_blank" style="color:var(--fg); text-decoration:none;">[ X ]</a> . <a href="https://github.com/aaaklld" class="has-tooltip term-tooltip tooltip-right" data-tooltip='git commit -m "لا تسرق اكوادي..."' style="color:var(--fg); text-decoration:none;">[ GITHUB ]</a></span>` },
+    { delay: 800, type: 'type', text: 'su danas_guest', prompt: 'dana_alakail@riyadh' },
+    { delay: 300, type: 'enter' },
+    { delay: 200, type: 'print', text: `<span style="color:var(--dim)">[sudo] switching user to danas_guest...</span>` },
+    { delay: 500, type: 'activate' }
   ];
 
   let stepIdx = 0;
@@ -425,27 +660,35 @@
     setTimeout(() => {
       if (s.type === 'type') {
         activeLine = document.createElement('div');
-        activeLine.className = 'prompt-line term-output-line';
-        activeLine.innerHTML = `<span class="p-host">${s.prompt}</span><span class="p-sep">:</span><span class="p-path">~</span><span class="p-dollar"> $ </span><span class="typing-text"></span><span class="cursor"></span>`;
+        activeLine.className = 'prompt-line';
+        activeLine.innerHTML = `<span class="p-host">${s.prompt}</span><span class="p-sep">:</span><span class="p-path">~</span><span class="p-dollar"> $ </span><span class="p-cmd typing-text"></span><span class="cursor"></span>`;
         output.appendChild(activeLine);
         activeTextSpan = activeLine.querySelector('.typing-text');
-        
-        if (s.text) {
-          typeChar(s.text, 0, () => { stepIdx++; processGhostStep(); });
-        } else {
-          stepIdx++; processGhostStep();
-        }
+        typeChar(s.text, 0, () => { stepIdx++; processGhostStep(); });
       } else if (s.type === 'enter') {
         if (activeLine) {
           const cursor = activeLine.querySelector('.cursor');
           if (cursor) cursor.remove();
+          activeLine.style.marginBottom = '0.2rem';
         }
         stepIdx++; processGhostStep();
       } else if (s.type === 'print') {
         const p = document.createElement('div');
+        p.style.cssText = 'color:var(--accent); margin-bottom:1rem; white-space:pre-wrap;';
         p.innerHTML = s.text;
         output.appendChild(p);
         stepIdx++; processGhostStep();
+      } else if (s.type === 'activate') {
+        promptName = 'danas_guest@riyadh';
+        if (shellHost) shellHost.textContent = promptName;
+        inputRow.style.display = 'flex';
+        
+        const w = document.createElement('div');
+        w.style.cssText = 'color:var(--dim); margin-bottom:.5rem; font-size:.75rem;';
+        w.innerHTML = `interactive shell loaded. type <span style="color:var(--fg)">help</span> to see commands.\n// ↑ ↓ arrow keys navigate history.`;
+        output.appendChild(w);
+
+        input.focus();
       }
     }, s.delay);
   }
@@ -453,25 +696,559 @@
   function typeChar(text, i, cb) {
     if (i < text.length) {
       activeTextSpan.textContent += text.charAt(i);
-      setTimeout(() => typeChar(text, i+1, cb), Math.random() * 60 + 30);
+      setTimeout(() => typeChar(text, i+1, cb), Math.random() * 40 + 30);
     } else { cb(); }
   }
 
   processGhostStep();
+
+  function getRiyadhDateStr() {
+    const now = new Date();
+    const timeStr = now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh', hour12: false });
+    let hijri = "1447-08-12";
+    try {
+      const hijriFmt = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { timeZone: 'Asia/Riyadh', calendar: 'islamic-umalqura', year: 'numeric', month: '2-digit', day: '2-digit' });
+      const parts = hijriFmt.formatToParts(now);
+      let y, m, d;
+      parts.forEach(p => { if(p.type === 'year') y = p.value; if(p.type === 'month') m = p.value; if(p.type === 'day') d = p.value; });
+      hijri = `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+    } catch(e) {}
+    return `Riyadh Time: ${timeStr} AST\nHijri: ${hijri}`;
+  }
+
+  function processCommand(raw) {
+    const trimmed = raw.trim();
+    if (!trimmed) return '';
+    cmdHistory.push(trimmed);
+    histIdx = cmdHistory.length;
+    
+    const args = trimmed.split(/\s+/);
+    const cmd = args[0].toLowerCase();
+    const arg1 = args[1] ? args[1].toLowerCase() : null;
+
+    switch(cmd) {
+      case 'help': 
+        return `available commands:\n  whoami      → profile info\n  ls [dir]    → list directories/files\n  cat [file]  → read a file\n  open [page] → navigate to page\n  uname -a    → system info\n  date        → current date & time\n  ping [host] → network test\n  traceroute  → route to destination\n  history     → command history\n  clear       → clear terminal\n  exit        → terminate`;
+      
+      case 'whoami': 
+        return `dana_alakail — Cybersecurity BSc. Student.\nSpecializing in Active Defense, Deception Engineering, and Automation.`;
+      
+      case 'ls':
+        if(arg1 === 'writeups/' || arg1 === 'writeups') return `htb-machine.md  thm-room.md`;
+        if(arg1 === 'blog/' || arg1 === 'blog') return `my-first-bounty.md  zero-trust-impl.md`;
+        if(arg1 === 'projects/' || arg1 === 'projects') return `Al-Khokha.sh  AutomationScript  CTF_Challenges`;
+        return `about.html  contact.html  projects/  blog/  writeups/  ctf/`;
+      
+      case 'cat':
+        if(!arg1) return `usage: cat [file]`;
+        if(arg1 === 'about.txt') return `Cybersecurity student at King Saud University.\nBuilding deceptive environments to enforce Zero Trust architectures.`;
+        if(arg1 === 'skills.txt') return `Python, Bash, Pentesting, Splunk, Wazuh, Wireshark, Nmap... Play with the stars below to see more of my skills!`;
+        if(arg1 === 'robots.txt') return `User-agent: *\nDisallow: /admin\nDisallow: /hidden_flags`;
+        return `cat: ${arg1}: No such file or directory`;
+      
+      case 'open':
+        if(!arg1) return `usage: open [page]`;
+        window.open(arg1 + '.html', '_blank');
+        return `opening ${arg1} in a new tab...`;
+
+      case 'uname':
+        return `Linux riyadh_node 6.1.0-kali3-amd64 #1 SMP PREEMPT_DYNAMIC Kali\nBrowser: ${navigator.userAgent}`;
+
+      case 'date':
+        return getRiyadhDateStr();
+
+      case 'ping':
+        const host = arg1 || '127.0.0.1';
+        return `PING ${host} (104.21.4.15): 56 data bytes\n64 bytes from 104.21.4.15: icmp_seq=0 ttl=58 time=12.1 ms\n64 bytes from 104.21.4.15: icmp_seq=1 ttl=58 time=11.8 ms\n64 bytes from 104.21.4.15: icmp_seq=2 ttl=58 time=12.0 ms\n--- ${host} ping statistics ---\n3 packets transmitted, 3 packets received, 0.0% packet loss`;
+
+      case 'traceroute':
+        const target = arg1 || 'destination';
+        return `traceroute to ${target} (1.1.1.1), 30 hops max, 60 byte packets\n 1  router.local (192.168.1.1)  1.123 ms\n 2  isp.gateway (10.0.0.1)  5.432 ms\n 3  core.network (172.16.2.2)  12.333 ms\n 4  ${target} (1.1.1.1)  14.111 ms`;
+
+      case 'history':
+        return cmdHistory.map((c, i) => `  ${i+1}  ${c}`).join('\n');
+
+      case 'clear':
+        output.innerHTML = ''; return null;
+
+      case 'exit':
+        return `Session terminated.`;
+
+      default:
+        return `command not found: ${cmd}`;
+    }
+  }
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = input.value;
+      const resp = processCommand(val);
+      
+      const pLine = document.createElement('div');
+      pLine.className = 'prompt-line';
+      pLine.innerHTML = `<span class="p-host">${promptName}</span><span class="p-sep">:</span><span class="p-path">~</span><span class="p-dollar"> $</span>&nbsp;<span class="p-cmd">${val}</span>`;
+      output.appendChild(pLine);
+
+      if (resp) {
+        const rDiv = document.createElement('div');
+        rDiv.style.cssText = 'color:var(--accent); margin-bottom:.75rem; white-space:pre-wrap;';
+        rDiv.innerHTML = resp;
+        output.appendChild(rDiv);
+      }
+      input.value = '';
+      document.getElementById('term-1-body').scrollTop = document.getElementById('term-1-body').scrollHeight;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (histIdx > 0) { histIdx--; input.value = cmdHistory[histIdx]; }
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (histIdx < cmdHistory.length - 1) { histIdx++; input.value = cmdHistory[histIdx]; }
+      else { histIdx = cmdHistory.length; input.value = ''; }
+    }
+  });
+
+  document.getElementById('explore-terminal').addEventListener('click', () => { 
+    if(inputRow.style.display !== 'none') input.focus(); 
+  });
 })();
 
 /* ============================================================
-   6. CONSOLE EASTER EGG
+   CERTIFICATIONS CAROUSEL
 ============================================================ */
-(function consoleEasterEgg() {
-  const art = `
-%c  dana_alakail@riyadh — أهلاً وسهلاً — you opened DevTools. respect. 🇸🇦
-%c  still building. check back soon.
-`;
-  console.log(art,
-    'color: #ac9d99; font-family: monospace; font-weight: bold;',
-    'color: #7a6a67; font-family: monospace; font-style: italic;'
-  );
+(function setupCerts() {
+  const certs = [
+    {
+      title: [
+            "                     .---.                                 ",
+            "                     |   |                                 ",
+            "       __.....__     '---'_________   _...._               ",
+            "   .-''         '.   .---.\        |.'      '-.            ",
+            "  /     .-\\'\\'-.  `. |   | \\        .'```'.    '.     .|   ",
+            " /     /________\\   \\|   |  \\      |       \\     \\  .' |_  ",
+            " |                  ||   |   |     |        |    |.'     | ",
+            " \\    .-------------'|   |   |      \\      /    .'--.  .-' ",
+            "  \\    '-.____...---.|   |   |     |\\`'-.-'   .'    |  |   ",
+            "   `.             .' |   |   |     | '-....-'`      |  |   ",
+            "     `''-...... -'__.'   '  .'     '.               |  '.' ",
+            "                 |      ' '-----------'             |   /  ",
+            "                 |____.'                            `'-'   ",
+      ].join('\n'),
+      name: "eJPTv2 - Junior Penetration Tester",
+      type: "practical",
+      focus: "foundational penetration testing skills and methodologies.",
+      status: "COMPLETED: 2026-MAR-19",
+      flags: "`-w, --web`: Web app attacks\n`-n, --network`: Network attacks",
+      link: "#",
+      pgp: true
+    },
+    {
+      title: [
+        " ::::::::  :::::::::: ::::::::  :::    ::: :::::::::  ::::::::::: ::::::::::: :::   :::             ",
+        ":+:    :+: :+:       :+:    :+: :+:    :+: :+:    :+:     :+:         :+:     :+:   :+:    :+:      ",
+        "+:+        +:+       +:+        +:+    +:+ +:+    +:+     +:+         +:+      +:+ +:+     +:+      ",
+        "+#++:++#++ +#++:++#  +#+        +#+    +:+ +#++:++#:      +#+         +#+       +#++: +#++:++#++:++ ",
+        "       +#+ +#+       +#+        +#+    +#+ +#+    +#+     +#+         +#+        +#+       +#+      ",
+        "#+#    #+# #+#       #+#    #+# #+#    #+# #+#    #+#     #+#         #+#        #+#       #+#      ",
+        " ########  ########## ########   ########  ###    ### ###########     ###        ###                "
+      ].join('\n'),
+      name: "CompTIA Security+",
+      type: "theoretical",
+      focus: "core security concepts and practices.",
+      status: "COMPLETED: 2026-FEB-19",
+      flags: "`-d, --defense`: Threat mitigation\n`-a, --architecture`: Secure design",
+      link: "#",
+      pgp: true
+    },
+    {
+      title: [
+        "   ,---,                  .---.  .--.--.",
+        "  '  .' \\                /. ./| /  /    '.",
+        " /  ;    '.          .--'.  ' ;|  :  /`. /",
+        ":  :       \\        /__./ \\ : |;  |  |--`",
+        ":  |   /\\   \\   .--'.  '   \\' .|  :  ;_",
+        "|  :  ' ;.   : /___/ \\ |    ' ' \\  \\    `.",
+        "|  |  ;/  \\   \\;   \\  \\;      :  `----.   \\",
+        "'  :  | \\  \\ ,' \\   ;  `      |  __ \\  \\  |",
+        "|  |  '  '--'    .   \\    .\\  ; /  /`--'  /",
+        "|  :  :           \\   \\   ' \\ |'--'.     /",
+        "|  | ,'            :   '  |--\"   `--'---'",
+        "`--''               \\   \\ ;",
+        "                     '---\""
+      ].join('\n'),
+      name: "AWS Certified Cloud Practitioner",
+      type: "theoretical",
+      focus: "AWS Cloud platform, covering basic security and compliance.",
+      status: "COMPLETED: 2025-SEP-30",
+      flags: "`-c, --cloud`: Cloud fundamentals\n`-s, --security`: IAM & Policies",
+      link: "#",
+      pgp: true
+    },
+    {
+      title: [
+        "░▒▓████████▓▒░▒▓██████▓▒░░▒▓█▓▒░▒▓███████▓▒░  ",
+        "░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ",
+        "░▒▓█▓▒░     ░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ",
+        "░▒▓██████▓▒░░▒▓█▓▒░      ░▒▓█▓▒░▒▓███████▓▒░  ",
+        "░▒▓█▓▒░     ░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ",
+        "░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ",
+        "░▒▓████████▓▒░▒▓██████▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ "
+      ].join('\n'),
+      name: "eCIR - Certified Incident Responder",
+      type: "practical",
+      focus: "incident response, SOC, malware analysis, forensics.",
+      status: "IN PROGRESS",
+      flags: "`-i, --ir`: Incident Handling\n`-f, --forensics`: Digital Forensics",
+      link: "#",
+      pgp: false
+    },
+    {
+      title: [
+        "                                         ",
+        " _______ _______ _______ _______ _______ ",
+        "|\\     /|\\     /|\\     /|\\     /|\\     /|",
+        "| +---+ | +---+ | +---+ | +---+ | +---+ |",
+        "| |   | | |   | | |   | | |   | | |   | |",
+        "| |e  | | |C  | | |P  | | |P  | | |T  | |",
+        "| +---+ | +---+ | +---+ | +---+ | +---+ |",
+        "|/_____\\|/_____\\|/_____\\|/_____\\|/_____\\|"
+      ].join('\n'),
+      name: "eCPPT - Certified Professional Penetration Tester",
+      type: "practical",
+      focus: "advanced penetration testing skills and methodologies.",
+      status: "IN PROGRESS",
+      flags: "`-s, --skills`: Web, network, and mobile pentesting.\n`-t, --theory`: Advanced methodologies.",
+      link: "#",
+      pgp: false
+    },
+  ];
+
+let currentIdx = 0;
+  const contentDiv = document.getElementById('cert-content');
+
+  function renderCert(idx) {
+    const c = certs[idx];
+    
+    let html = `<div class="cert-ascii">${c.title}</div>
+<div style="color: var(--dim); margin-bottom: 1.5rem; font-family: 'JetBrains Mono', monospace;">
+  $ ./cert_viewer --load ${c.name.split(' - ')[0]}
+</div>
+
+<div style="display: grid; grid-template-columns: max-content 1fr; gap: 0.6rem 1.5rem; line-height: 1.6; font-size: 0.8rem;">
+  <div style="color: var(--dir); font-weight: bold;">-n, --name</div>
+  <div style="color: var(--fg);">${c.name}</div>
+  
+  <div style="color: var(--dir); font-weight: bold;">-t, --type</div>
+  <div style="color: var(--fg);">${c.type}</div>
+  
+  <div style="color: var(--dir); font-weight: bold;">-f, --focus</div>
+  <div style="color: var(--fg);">${c.focus}</div>
+  
+  <div style="color: var(--dir); font-weight: bold;">-s, --status</div>
+  <div style="color: var(--fg);">${c.status}</div>
+  
+  <div style="color: var(--dir); font-weight: bold;">--sub-flags</div>
+  <div style="color: var(--fg);">${c.flags.replace(/\n/g, '<br>')}</div>
+  
+  <div style="color: var(--dir); font-weight: bold;">-v, --view</div>
+  <div><a href="${c.link}" style="color:var(--accent); text-decoration:underline;">[ CLICK HERE TO VERIFY ]</a></div>
+</div>`;
+
+    if (c.pgp) {
+      html += `<div class="pgp-block">-----BEGIN PGP SIGNED MESSAGE-----<br>Hash: SHA256<br><br>Cert: ${c.name.split(' - ')[0]}<br>Holder: Dana Alakail<br>Status: ${c.status}<br>-----END PGP SIGNED MESSAGE-----</div>`;
+    }
+
+    contentDiv.innerHTML = html;
+  }
+
+  document.getElementById('cert-prev').addEventListener('click', () => {
+    currentIdx = (currentIdx - 1 + certs.length) % certs.length;
+    renderCert(currentIdx);
+  });
+
+  document.getElementById('cert-next').addEventListener('click', () => {
+    currentIdx = (currentIdx + 1) % certs.length;
+    renderCert(currentIdx);
+  });
+
+  renderCert(0);
+})();
+
+/* ============================================================
+   SKILLS STAR GRAPH (D3.js) - Obsidian Local Graph Style
+============================================================ */
+(function buildStarGraph() {
+  const container = document.getElementById('graph-container');
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+
+  const data = {
+    nodes: [
+      { id: "Arabic", size: 60 }, { id: "English", size: 60 },
+      { id: "Python", size: 90 }, { id: "Java", size: 60 }, { id: "C", size: 60 }, { id: "JavaScript", size: 50 }, { id: "Bash", size: 80 },
+      { id: "Nmap", size: 70 }, { id: "Wireshark", size: 70 }, { id: "Burpsuite", size: 70 }, { id: "Metasploit", size: 60 }, { id: "Splunk", size: 70 }, { id: "Wazuh", size: 70 }, { id: "Cypress", size: 50 },
+      { id: "SOC", size: 80 }, { id: "Incident response", size: 80 }, { id: "vulnerability assessment", size: 80 }, { id: "automation", size: 90 }, { id: "software testing & QA", size: 60 }, { id: "active defense", size: 100 }, { id: "deception engineering", size: 90 },
+      { id: "SQL", size: 50 }, { id: "NoSQL", size: 40 },
+      { id: "Frameworks", size: 70 }, { id: "SAMA", size: 50 }, { id: "NCA", size: 50 }, { id: "NIST", size: 50 }, { id: "ISO", size: 50 }
+    ],
+    links: [
+      { source: "Arabic", target: "English" },
+      { source: "active defense", target: "deception engineering" },
+      { source: "active defense", target: "Wazuh" },
+      { source: "active defense", target: "Splunk" },
+      { source: "SOC", target: "Incident response" },
+      { source: "SOC", target: "Splunk" },
+      { source: "SOC", target: "Wazuh" },
+      { source: "Incident response", target: "Wireshark" },
+      { source: "vulnerability assessment", target: "Nmap" },
+      { source: "vulnerability assessment", target: "Burpsuite" },
+      { source: "vulnerability assessment", target: "Metasploit" },
+      { source: "automation", target: "Python" },
+      { source: "automation", target: "Bash" },
+      { source: "automation", target: "Cypress" },
+      { source: "automation", target: "software testing & QA" },
+      { source: "software testing & QA", target: "Cypress" },
+      { source: "software testing & QA", target: "JavaScript" },
+      { source: "software testing & QA", target: "Java" },
+      { source: "deception engineering", target: "Python" },
+      { source: "deception engineering", target: "C" },
+      { source: "SQL", target: "NoSQL" },
+      { source: "SQL", target: "vulnerability assessment" },
+      { source: "Frameworks", target: "SAMA" },
+      { source: "Frameworks", target: "NCA" },
+      { source: "Frameworks", target: "NIST" },
+      { source: "Frameworks", target: "ISO" },
+      { source: "Frameworks", target: "SOC" },
+      { source: "Python", target: "Bash" }
+    ]
+  };
+
+  const svg = d3.select("#graph-container")
+    .append("svg")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox", [0, 0, width, height]);
+
+  const simulation = d3.forceSimulation(data.nodes)
+    .force("link", d3.forceLink(data.links).id(d => d.id).distance(80))
+    .force("charge", d3.forceManyBody().strength(-200)) // Repels nodes nicely
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .on("tick", ticked);
+
+  const link = svg.append("g")
+    .selectAll("line")
+    .data(data.links)
+    .enter().append("line")
+    .attr("class", "link");
+
+  const starGenerator = d3.symbol().type(d3.symbolStar);
+
+  const node = svg.append("g")
+    .selectAll("path")
+    .data(data.nodes)
+    .enter().append("path")
+    .attr("class", "node")
+    .attr("d", d => starGenerator.size(d.size)()) 
+    .call(drag(simulation));
+
+  const label = svg.append("g")
+    .selectAll("text")
+    .data(data.nodes)
+    .enter().append("text")
+    .attr("class", "label")
+    .text(d => d.id);
+
+  const linkedByIndex = {};
+  data.links.forEach(d => {
+      linkedByIndex[`${d.source.id},${d.target.id}`] = 1;
+      linkedByIndex[`${d.target.id},${d.source.id}`] = 1;
+  });
+
+  function isConnected(a, b) {
+      return linkedByIndex[`${a.id},${b.id}`] || a.id === b.id;
+  }
+
+  // Smooth Hover Logic (Obsidian Graph Style)
+  node.on("mouseover", function(event, d) {
+      const activeNode = d;
+      
+      // Highlight related nodes, dim unrelated
+      node.classed("highlight", o => isConnected(activeNode, o))
+          .classed("dimmed", o => !isConnected(activeNode, o));
+          
+      // Highlight related labels, dim unrelated
+      label.classed("highlight", o => isConnected(activeNode, o))
+           .classed("dimmed", o => !isConnected(activeNode, o));
+           
+      // Highlight related links, dim unrelated
+      link.classed("highlight", o => o.source.id === activeNode.id || o.target.id === activeNode.id)
+          .classed("dimmed", o => o.source.id !== activeNode.id && o.target.id !== activeNode.id);
+  });
+
+  node.on("mouseout", function() {
+      // Reset all classes when mouse leaves
+      node.classed("highlight dimmed", false);
+      label.classed("highlight dimmed", false);
+      link.classed("highlight dimmed", false);
+  });
+
+  function ticked() {
+    link
+      .attr("x1", d => Math.max(10, Math.min(width - 10, d.source.x)))
+      .attr("y1", d => Math.max(10, Math.min(height - 10, d.source.y)))
+      .attr("x2", d => Math.max(10, Math.min(width - 10, d.target.x)))
+      .attr("y2", d => Math.max(10, Math.min(height - 10, d.target.y)));
+
+    node.attr("transform", d => {
+      d.x = Math.max(10, Math.min(width - 10, d.x));
+      d.y = Math.max(10, Math.min(height - 10, d.y));
+      return `translate(${d.x},${d.y})`;
+    });
+
+    label
+      .attr("x", d => d.x + 8)
+      .attr("y", d => d.y + 4);
+  }
+
+  function drag(simulation) {
+    function dragstarted(event) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      event.subject.fx = event.subject.x;
+      event.subject.fy = event.subject.y;
+      d3.select(this).style("cursor", "grabbing");
+    }
+    function dragged(event) {
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+    }
+    function dragended(event) {
+      if (!event.active) simulation.alphaTarget(0);
+      event.subject.fx = null;
+      event.subject.fy = null;
+      d3.select(this).style("cursor", "grab");
+    }
+    return d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
+  }
+})();
+
+/* ============================================================
+   CONTACT TYPER
+============================================================ */
+(async function initContactTyper() {
+  const container = document.getElementById('typer-container');
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  const promptHTML = `<span class="p-host">dana_alakail</span><span class="p-sep">@</span><span class="p-path">riyadh</span><span class="p-sep">:</span><span class="p-path">~</span><span class="p-dollar"> $</span>`;
+  
+  const out2 = [
+    [{ text: "[*] ", classes: "color-dim" }, { text: "website (home)", href: "index.html", classes: "color-accent" }],
+    [{ text: "[*] ", classes: "color-dim" }, { text: "email", href: "mailto:dana.alakail@gmail.com", classes: "color-accent", tooltip: 'echo "Hello" | nc dana_alakail 25' }],
+    [{ text: "[*] ", classes: "color-dim" }, { text: "linkedin", href: "[https://linkedin.com/in/dana-alakail](https://linkedin.com/in/dana-alakail)", target: "_blank", classes: "color-accent" }],
+    [{ text: "[*] ", classes: "color-dim" }, { text: "x", href: "[https://twitter.com/aaakllld](https://twitter.com/aaakllld)", target: "_blank", classes: "color-accent" }],
+    [{ text: "[*] ", classes: "color-dim" }, { text: "github", href: "[https://github.com/aaaklld](https://github.com/aaaklld)", target: "_blank", classes: "color-accent", tooltip: 'git commit -m "لا تسرق اكوادي..."' }],
+    [{ text: "" }], 
+    [{ text: "[+] ", classes: "color-success" }, { text: "AVAILABILITY: Available for projects, co-op/internships.", classes: "color-fg" }],
+    [{ text: "[+] ", classes: "color-success" }, { text: "to view my CV, click [ ", classes: "color-fg" }, { text: "here", href: "cv.html", classes: "color-dir" }, { text: " ]", classes: "color-fg" }]
+  ];
+
+  let activeTextNode = null;
+  let activeCursor = null;
+
+  function createPromptLine() {
+    if (activeCursor) activeCursor.remove();
+    const line = document.createElement('div');
+    line.className = 'prompt-line';
+    line.style.marginTop = '1rem';
+    line.innerHTML = promptHTML;
+    activeTextNode = document.createElement('span');
+    activeTextNode.className = 'p-cmd';
+    activeCursor = document.createElement('span');
+    activeCursor.className = 'cursor';
+    line.appendChild(activeTextNode);
+    line.appendChild(activeCursor);
+    container.appendChild(line);
+  }
+
+  async function machineTypeLines(lines) {
+    const block = document.createElement('div');
+    block.className = 'cmd-output';
+    block.style.marginTop = '0.5rem';
+    container.appendChild(block);
+    
+    for (const line of lines) {
+      const lineDiv = document.createElement('div');
+      if (line.length === 1 && line[0].text === "") lineDiv.innerHTML = "<br>";
+      block.appendChild(lineDiv);
+      
+      for (const seg of line) {
+        if (!seg.text) continue;
+        const el = document.createElement(seg.href ? 'a' : 'span');
+        if (seg.href) {
+          el.href = seg.href;
+          if (seg.target) el.target = seg.target;
+        }
+        if (seg.classes) el.className = seg.classes;
+        if (seg.tooltip) {
+          el.classList.add('has-tooltip');
+          el.setAttribute('data-tooltip', seg.tooltip);
+        }
+        lineDiv.appendChild(el);
+        for (const char of seg.text) {
+          el.textContent += char;
+          await sleep(5);
+        }
+      }
+    }
+  }
+
+  const sequence = [
+    { type: 'delay', ms: 1000 },
+    { type: 'prompt' },
+    { type: 'delay', ms: 500 },
+    { type: 'string', text: './pin', speed: 80 },
+    { type: 'delay', ms: 100 },
+    { type: 'string', text: 'h', speed: 120 }, 
+    { type: 'delay', ms: 250 },
+    { type: 'backspace', count: 1, speed: 100 },
+    { type: 'delay', ms: 150 },
+    { type: 'string', text: 'g_me', speed: 90 },
+    { type: 'delay', ms: 400 },
+    { type: 'enter' },
+    { type: 'machinePrint', lines: out2 }
+  ];
+
+  const observer = new IntersectionObserver(async (entries) => {
+    if(entries[0].isIntersecting) {
+      observer.disconnect();
+      for (const step of sequence) {
+        switch(step.type) {
+          case 'prompt': createPromptLine(); break;
+          case 'delay': await sleep(step.ms); break;
+          case 'string':
+            if (activeCursor) activeCursor.classList.add('static');
+            for (let char of step.text) {
+              activeTextNode.textContent += char;
+              await sleep(step.speed + ((Math.random() * 40) - 20)); 
+            }
+            if (activeCursor) activeCursor.classList.remove('static');
+            break;
+          case 'backspace':
+            if (activeCursor) activeCursor.classList.add('static');
+            for (let i = 0; i < step.count; i++) {
+              activeTextNode.textContent = activeTextNode.textContent.slice(0, -1);
+              await sleep(step.speed);
+            }
+            if (activeCursor) activeCursor.classList.remove('static');
+            break;
+          case 'enter': if (activeCursor) activeCursor.remove(); await sleep(50); break;
+          case 'machinePrint': await machineTypeLines(step.lines); break;
+        }
+      }
+    }
+  }, { threshold: 0.5 });
+  observer.observe(container);
+
 })();
 
 </script>

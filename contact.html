@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>dana_alakail@riyadh:~/contact $</title>
+  <meta name="description" content="Dana Alakail — Contact & Links" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Kufi+Arabic:wght@300;400;600;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       TOKENS & RESET (Monochromatic Minimalist Palette)
+    ============================================================ */
+     :root, [data-theme="dark"] {
+      --bg:        #170005;
+      --bg-raised: #290a14;
+      --bg-sunken: #1c050c; 
+      --fg:        #e3c8cd; /* Lighter, soft peach/pink blush */
+      --accent:    #c49da5; /* Warmer, mid-tone dusty pink */
+      --dim:       #96727b; /* Cooled down pink-grey for readability */
+      --dir:       #c49da5; /* Matches accent */
+      --error:     #8a4b56; 
+      --success:   #5b705b; 
+      --border:    #4a1827; 
+      --cursor:    #e3c8cd; /* Matches main text */
+      --hi:        #290a14;
+    }
+    [data-theme="light"] {
+      --bg:        #c6c5c0;
+      --bg-raised: #d2d5cf;
+      --bg-sunken: #b9b5b0;
+      --fg:        #3f0f18;
+      --accent:    #7c5a64;
+      --dim:       #6b4a53;
+      --dir:       #7c5a64;
+      --error:     #9e3e4f;
+      --success:   #466b46;
+      --border:    #9a918b; 
+      --cursor:    #3f0f18;
+      --hi:        #d2d5cf;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    ::selection { background: var(--hi); color: var(--fg); }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.4; /* Terminal-like spacing */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color .35s ease, color .35s ease;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* ============================================================ NAV */
+    .site-nav {
+      position: sticky; top: 0; z-index: 100;
+      width: 100%; 
+      border-bottom: 1px solid var(--border); padding: .75rem 0;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      transition: background-color .35s ease;
+    }
+    .nav-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { text-decoration: none; font-weight: 700; font-size: .78rem; color: var(--fg); }
+    .nav-logo .nh { color: var(--dir); }
+    .nav-logo .ns { color: var(--dim); }
+    .nav-logo .np { color: var(--accent); }
+
+    .theme-toggle {
+      background: none; border: 1px solid var(--border); color: var(--dim);
+      font-family: inherit; font-size: .68rem;
+      padding: .25rem .65rem; cursor: pointer; border-radius: 2px;
+      transition: color .2s, border-color .2s; white-space: nowrap;
+    }
+    .theme-toggle:hover { color: var(--fg); border-color: var(--accent); }
+
+    /* ============================================================ MAIN LAYOUT */
+    .site-wrapper { 
+      max-width: 720px; 
+      margin: 3rem auto; 
+      padding: 0 1.5rem; 
+      flex: 1; 
+      width: 100%;
+    }
+
+    /* ============================================================ TERMINAL TYPING AREA */
+    #typer-container {
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .prompt-line { display: flex; align-items: baseline; gap: 0; flex-wrap: wrap; margin-top: 1.2rem; }
+    .prompt-line:first-child { margin-top: 0; }
+    
+    .p-host   { color: var(--dir); font-weight: 600; }
+    .p-sep    { color: var(--dim); }
+    .p-path   { color: var(--accent); }
+    .p-dollar { color: var(--fg); margin-right: 0.5rem; }
+    
+    .type-text { color: var(--fg); }
+    .cmd-output { color: var(--accent); margin-top: 0.2rem; margin-bottom: 0.5rem; }
+    .prompt-exec { color: var(--error); font-weight: bold; margin-right: 0.25rem;}
+    
+    .cmd-output a {
+      color: var(--fg);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--dim);
+      transition: all 0.2s;
+    }
+    .cmd-output a:hover {
+      color: var(--dir);
+      border-bottom: 1px solid var(--dir);
+      text-shadow: 0 0 8px var(--bg-raised);
+    }
+
+    /* ============================================================ CURSOR */
+    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+    .cursor {
+      display: inline-block; width: .55em; height: 1em;
+      background: var(--cursor); vertical-align: text-bottom;
+      animation: blink 1.1s step-end infinite;
+      margin-left: 2px;
+    }
+    .cursor.static { animation: none; opacity: 1; }
+  </style>
+</head>
+
+<body>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="Home">
+      <span class="nh">dana_alakail</span><span class="ns">@</span><span class="np">riyadh</span><span class="ns">:</span><span class="np">~/contact</span><span class="ns"> $</span>
+    </a>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">[9aba7 mode]</button>
+  </div>
+</nav>
+
+<main class="site-wrapper">
+  <div id="typer-container" aria-live="polite"></div>
+</main>
+
+<script>
+'use strict';
+
+/* ============================================================
+   1. THEME TOGGLE
+============================================================ */
+(function themeToggle() {
+  const btn  = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+
+  const saved = localStorage.getItem('bh-theme') || 'dark';
+  html.setAttribute('data-theme', saved);
+  btn.textContent = saved === 'dark' ? '[9aba7 mode]' : '[Masa2 mode]';
+
+  btn.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme') || 'dark';
+    const next    = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('bh-theme', next);
+    btn.textContent = next === 'dark' ? '[9aba7 mode]' : '[Masa2 mode]';
+  });
+})();
+
+/* ============================================================
+   2. HUMAN & MACHINE GHOST TYPER
+============================================================ */
+(async function initTyper() {
+  const container = document.getElementById('typer-container');
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  // HTML templates
+  const promptHTML = `<span class="p-host">dana_alakail</span><span class="p-sep">@</span><span class="p-path">riyadh</span><span class="p-sep">:</span><span class="p-path">~</span><span class="p-dollar"> $</span>`;
+  
+  // Machine Output 1 Data Array
+  const out1 = [
+    [{ text: ">> ", classes: "prompt-exec" }, { text: "dana_alakail" }],
+    [{ text: ">> ", classes: "prompt-exec" }],
+    [{ text: ">> ", classes: "prompt-exec" }, { text: "Cybersecurity BSc. Student at KSU." }],
+    [{ text: ">> ", classes: "prompt-exec" }, { text: "KAUST CyS Aluma." }],
+    [{ text: ">> ", classes: "prompt-exec" }, { text: "[Al-Khokha] Creator." }],
+    [{ text: ">> ", classes: "prompt-exec" }, { text: "Interested in:" }],
+    [{ text: "    >> ", classes: "prompt-exec" }, { text: "Deception Engineering." }],
+    [{ text: "    >> ", classes: "prompt-exec" }, { text: "Active Defense." }],
+    [{ text: "    >> ", classes: "prompt-exec" }, { text: "Automation." }]
+  ];
+
+  // Machine Output 2 Data Array (Links included)
+  const out2 = [
+    [{ text: "[*] " }, { text: "website (home)", href: "index.html" }],
+    [{ text: "[*] " }, { text: "email", href: "mailto:dana.alakail@gmail.com" }],
+    [{ text: "[*] " }, { text: "linkedin", href: "https://linkedin.com/in/dana-alakail", target: "_blank" }],
+    [{ text: "[*] " }, { text: "x", href: "https://twitter.com/aaakllld", target: "_blank" }],
+    [{ text: "[*] " }, { text: "github", href: "https://github.com/aaaklld", target: "_blank" }],
+    [{ text: "" }], // Empty line
+    [{ text: "[+] AVAILABILITY: Available for projects, co-op/internships." }],
+    [{ text: "[+] to view my CV, click [ " }, { text: "here", href: "cv.html" }, { text: " ]" }]
+  ];
+
+  // Typing Sequence Instructions
+  const sequence = [
+    { type: 'delay', ms: 600 },
+    
+    // Command 1: whoami (with a typo)
+    { type: 'prompt' },
+    { type: 'delay', ms: 400 },
+    { type: 'string', text: 'whom', speed: 90 }, // Human typing speed
+    { type: 'delay', ms: 150 },
+    { type: 'string', text: 'ai', speed: 110 },
+    { type: 'delay', ms: 300 },
+    { type: 'backspace', count: 3, speed: 100 },
+    { type: 'delay', ms: 200 },
+    { type: 'string', text: 'ami', speed: 80 },
+    { type: 'delay', ms: 300 },
+    { type: 'enter' },
+    { type: 'machinePrint', lines: out1 },
+    
+    { type: 'delay', ms: 800 },
+    
+    // Command 2: ./ping_me (with a typo)
+    { type: 'prompt' },
+    { type: 'delay', ms: 500 },
+    { type: 'string', text: './pin', speed: 80 },
+    { type: 'delay', ms: 100 },
+    { type: 'string', text: 'h', speed: 120 }, // oops, hit 'h' instead of 'g'
+    { type: 'delay', ms: 250 },
+    { type: 'backspace', count: 1, speed: 100 },
+    { type: 'delay', ms: 150 },
+    { type: 'string', text: 'g_me', speed: 90 },
+    { type: 'delay', ms: 400 },
+    { type: 'enter' },
+    { type: 'machinePrint', lines: out2 },
+    
+    { type: 'delay', ms: 600 },
+    
+    // Final blinking prompt
+    { type: 'prompt' }
+  ];
+
+  // DOM state
+  let activeTextNode = null;
+  let activeCursor = null;
+
+  function createPromptLine() {
+    if (activeCursor) activeCursor.remove();
+    
+    const line = document.createElement('div');
+    line.className = 'prompt-line';
+    line.innerHTML = promptHTML;
+    
+    activeTextNode = document.createElement('span');
+    activeTextNode.className = 'type-text';
+    
+    activeCursor = document.createElement('span');
+    activeCursor.className = 'cursor';
+    
+    line.appendChild(activeTextNode);
+    line.appendChild(activeCursor);
+    container.appendChild(line);
+    
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+
+  // Machine Typing Function (Fast, flawless, renders HTML elements natively)
+  async function machineTypeLines(lines) {
+    const block = document.createElement('div');
+    block.className = 'cmd-output';
+    container.appendChild(block);
+    
+    for (const line of lines) {
+      const lineDiv = document.createElement('div');
+      // Fix for empty lines
+      if (line.length === 1 && line[0].text === "") {
+        lineDiv.innerHTML = "<br>";
+      }
+      block.appendChild(lineDiv);
+      
+      for (const seg of line) {
+        if (!seg.text) continue;
+        
+        // Create the correct element (anchor tag or span)
+        const el = document.createElement(seg.href ? 'a' : 'span');
+        if (seg.href) {
+          el.href = seg.href;
+          if (seg.target) el.target = seg.target;
+        }
+        if (seg.classes) el.className = seg.classes;
+        
+        lineDiv.appendChild(el);
+        
+        // Machine typing speed (flawless, very fast)
+        for (const char of seg.text) {
+          el.textContent += char;
+          window.scrollTo(0, document.body.scrollHeight);
+          await sleep(5); // Super fast 5ms interval
+        }
+      }
+    }
+  }
+
+  // Execution Engine
+  for (const step of sequence) {
+    switch(step.type) {
+      case 'prompt':
+        createPromptLine();
+        break;
+        
+      case 'delay':
+        await sleep(step.ms);
+        break;
+        
+      case 'string':
+        if (activeCursor) activeCursor.classList.add('static');
+        for (let char of step.text) {
+          activeTextNode.textContent += char;
+          const variance = (Math.random() * 40) - 20; 
+          await sleep(step.speed + variance); // Human variation
+        }
+        if (activeCursor) activeCursor.classList.remove('static');
+        break;
+        
+      case 'backspace':
+        if (activeCursor) activeCursor.classList.add('static');
+        for (let i = 0; i < step.count; i++) {
+          activeTextNode.textContent = activeTextNode.textContent.slice(0, -1);
+          await sleep(step.speed);
+        }
+        if (activeCursor) activeCursor.classList.remove('static');
+        break;
+        
+      case 'enter':
+        if (activeCursor) activeCursor.remove();
+        await sleep(50);
+        break;
+        
+      case 'machinePrint':
+        await machineTypeLines(step.lines);
+        break;
+    }
+  }
+
+})();
+</script>
+</body>
+</html>

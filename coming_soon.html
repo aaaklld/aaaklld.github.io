@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>dana_alakail@riyadh:~/eid $</title>
-  <meta name="description" content="عيدكم مبارك — Happy Eid from Dana Alakail." />
+  <title>dana_alakail@riyadh:~ $</title>
+  <meta name="description" content="Dana's Portfolio — Coming Soon." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Kufi+Arabic:wght@300;400;600&display=swap" rel="stylesheet" />
@@ -14,7 +13,7 @@
     /* ============================================================
        TOKENS
     ============================================================ */
-     :root, [data-theme="dark"] {
+    :root, [data-theme="dark"] {
       --bg:        #170005;
       --bg-raised: #290a14;
       --bg-sunken: #1c050c; 
@@ -58,7 +57,7 @@
       display: flex;
       flex-direction: column;
       transition: background-color .35s ease, color .35s ease;
-      overflow-x: hidden;
+      /* Removed overflow-x: hidden to fix iOS pinch-zoom navbar clipping bug */
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     }
 
@@ -101,6 +100,7 @@
     /* ============================================================ NAV */
     .site-nav {
       position: sticky; top: 0; z-index: 100;
+      width: 100%; /* Ensures the blurred background stretches fully */
       border-bottom: 1px solid var(--border); padding: .75rem 0;
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       background: color-mix(in srgb, var(--bg) 88%, transparent);
@@ -158,48 +158,46 @@
     .boot-line { color: var(--dim); margin-bottom: .18rem; opacity: 0; animation: fadeSlide .15s ease forwards; }
     .boot-line.ok     { color: var(--accent); }
     .boot-line.hi     { color: var(--fg); font-weight: 700; }
-    .boot-line.arabic { font-family: 'Noto Sans Arabic', monospace; color: var(--dir); font-size: 1rem; margin-top: .6rem; }
+    .boot-line.arabic { font-family: 'Noto Kufi Arabic', monospace; color: var(--dir); font-size: 1rem; margin-top: .6rem; }
 
     /* ============================================================ HERO & TERMINAL */
-    #hero { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 0; width: 100%; }
+    #hero { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 0; width: 100%; max-width: 100vw; }
     
     .ascii-wrap {
       display: flex;
       justify-content: center;
       margin-bottom: 2.5rem;
-      overflow-x: auto;
       width: 100%;
     }
+    
     #ascii-container {
       font-family: monospace;
       white-space: pre;
-      font-size: 6px; 
-      line-height: 6px;
-      letter-spacing: 1px;
+      /* Upped the minimum font size slightly for visibility */
+      font-size: clamp(4px, 1.6vw, 6px); 
+      line-height: 1;
+      /* Removed letter-spacing to allow clean scaling without breaking layout */
       color: var(--fg);
       user-select: none;
       text-align: left;
     }
 
     .term-output {
-      font-size: .8rem; 
+      font-size: 0.75rem; 
       line-height: 1.7; color: var(--accent);
     }
     .term-output-line { margin-bottom: .05rem; }
 
-    .sheep-ascii {
+    .coming-soon-ascii {
       color: var(--fg);
       font-weight: 700;
-      font-size: 10px; /* Sheep fits well on mobile at this size */
+      font-size: clamp(7px, 2.2vw, 14px); 
       line-height: 1.2;
       white-space: pre;
-      overflow-x: auto;
+      overflow-x: hidden;
       margin: 1rem 0;
     }
 
-    @media (min-width: 480px) {
-      .sheep-ascii { font-size: 12px; }
-    }
   </style>
 </head>
 
@@ -213,7 +211,7 @@
 
 <nav class="site-nav" aria-label="Main navigation">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo" aria-label="Home">
+    <a href="#" class="nav-logo" aria-label="Home">
       <span class="nh" id="nav-host">dana_alakail</span><span class="ns">@</span><span class="np">riyadh</span><span class="ns">:</span><span class="np">~</span><span class="ns"> $</span>
     </a>
     <div class="nav-right">
@@ -226,14 +224,14 @@
 <main class="site-wrapper">
   <section id="hero" aria-label="Introduction">
     <div class="ascii-wrap">
-      <img id="source-image" src="eid_mubarak.png" style="display:none;" crossorigin="anonymous" alt="Eid Mubarak Image">
+      <img id="source-image" src="IMG_3044.PNG" style="display:none;" crossorigin="anonymous">
       <div id="ascii-container" aria-hidden="true"></div>
     </div>
 
     <div class="term-block">
       <div class="term-titlebar">
         <div class="term-dots"><span></span><span></span><span></span></div>
-        <span class="term-title">terminal — eid.sh</span>
+        <span class="term-title">terminal — setup.sh</span>
       </div>
       <div class="term-body">
         <div class="term-output" id="term-output" aria-live="polite"></div>
@@ -260,40 +258,102 @@
 })();
 
 /* ============================================================
-   2. BOOT SEQUENCE
+   2. HOME PAGE BOOT SEQUENCE
 ============================================================ */
-(function bootSequence() {
-  const screen    = document.getElementById('boot-screen');
+(async function bootSequence() {
+  const screen = document.getElementById('boot-screen');
   const container = document.getElementById('boot-lines');
-  const hour      = new Date().getHours();
-  const isEvening = hour >= 18 || hour < 5;
 
-  const arabicLine = isEvening
-    ? 'Masa al-Khair. Night Mode Active.'
-    :'Sabah al-Khair. Day Mode Active.';
+  // Helper to pause execution 
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const lines = [
-    { text: 'BIOS v2.4.0 — KSA Secure Boot initialized',      cls: '',      delay: 80   },
-    { text: '[*] Loading kernel modules...',                cls: 'ok',    delay: 280  },
-    { text: '[*] Establishing secure context...',           cls: 'ok',    delay: 460  },
-    { text: '[*] Loading Eid protocols...',                 cls: 'ok',    delay: 620  },
-    { text: '[*] Loading cultural config: KSA_locale...',   cls: 'ok',    delay: 800  },
-    { text: '[+] All systems nominal.',                     cls: 'hi',    delay: 1100 },
-    { text: arabicLine,                                        cls: 'arabic',delay: 1350 },
-  ];
-
-  lines.forEach(({ text, cls, delay }) => {
+  // Helper to generate text lines
+  function addLine(text, className = '', isCentered = false) {
     const el = document.createElement('p');
-    el.textContent = text;
-    el.className   = 'boot-line' + (cls ? ' ' + cls : '');
-    el.style.animationDelay = delay + 'ms';
+    el.innerHTML = text;
+    el.className = 'boot-line ' + className;
+    if (isCentered) el.style.textAlign = 'center';
     container.appendChild(el);
-  });
+    return el;
+  }
 
-  setTimeout(() => screen.classList.add('done'), 2400);
-  setTimeout(() => screen.remove(),               3000);
+  // Helper to sniff visitor info
+  function getVisitorInfo() {
+    const ua = navigator.userAgent;
+    
+    // Sniff OS
+    let os = "Unknown OS";
+    if (ua.indexOf("Win") > -1) os = "Windows";
+    else if (ua.indexOf("Mac") > -1) os = "MacOS";
+    else if (ua.indexOf("Linux") > -1) os = "Linux";
+    if (/Android/.test(ua)) os = "Android";
+    if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
+    
+    // Sniff Browser
+    let browser = "Unknown Browser";
+    if (ua.indexOf("Firefox") > -1) browser = "Firefox";
+    else if (ua.indexOf("SamsungBrowser") > -1) browser = "Samsung Browser";
+    else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) browser = "Opera";
+    else if (ua.indexOf("Edge") > -1) browser = "Edge";
+    else if (ua.indexOf("Chrome") > -1) browser = "Chrome";
+    else if (ua.indexOf("Safari") > -1) browser = "Safari";
+
+    // Generate masked mock IP
+    const ip = `192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)} (masked)`;
+    
+    return { os, browser, ip };
+  }
+
+  // --- START SEQUENCE ---
+  
+  // 1. Centered Loading & Progress Bar
+  addLine('[ LOADING... ]', 'hi', true);
+  const progressEl = addLine('[--------------------]', 'hi', true);
+  progressEl.style.marginBottom = '1.5rem';
+
+  // Animate the progress bar dynamically
+  let p = 0;
+  while (p < 20) {
+    p += Math.floor(Math.random() * 4) + 1;
+    if (p > 20) p = 20;
+    progressEl.textContent = `[${'#'.repeat(p)}${'-'.repeat(20 - p)}]`;
+    await sleep(Math.random() * 150 + 50); // random pauses to look authentic
+  }
+  await sleep(400);
+
+  // 2. Initializing
+  addLine('initializing secure_protocol...');
+  await sleep(400);
+  addLine('fetching project_database...');
+  await sleep(400);
+  addLine('bypassing firewall...');
+  await sleep(600);
+
+  // 3. Info Sniffing
+  const info = getVisitorInfo();
+  addLine('<br>VISITOR DETECTED:', 'hi');
+  await sleep(300);
+  addLine(`> IP: ${info.ip}`, 'accent');
+  await sleep(200);
+  addLine(`> OS: ${info.os}`, 'accent');
+  await sleep(200);
+  addLine(`> Browser: ${info.browser}`, 'accent');
+  await sleep(200);
+  addLine(`> Threat Level: <span style="color:var(--success)">Low</span>`, 'accent');
+  await sleep(1000);
+
+  // 4. The Joke
+  addLine('<br>stealing your information... (just kidding)', 'dim');
+  await sleep(1500);
+
+  // 5. Access Granted
+  addLine('SYSTEM ACCESS GRANTED: حياكم الله :))', 'ok arabic');
+  await sleep(2000);
+
+  // Fade out screen
+  screen.classList.add('done');
+  setTimeout(() => screen.remove(), 600);
 })();
-
 /* ============================================================
    3. THEME TOGGLE
 ============================================================ */
@@ -303,7 +363,7 @@
   const html  = document.documentElement;
   let timer;
 
-  const saved = localStorage.getItem('bh-theme') || 'light';
+  const saved = localStorage.getItem('bh-theme') || 'dark';
   html.setAttribute('data-theme', saved);
   btn.textContent = saved === 'dark' ? '[9aba7 mode]' : '[Masa2 mode]';
 
@@ -337,7 +397,9 @@
   img.onload = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const asciiWidth = window.innerWidth < 640 ? 60 : 120; // Mobile responsive
+    
+    // Upped the mobile width to 100 to restore high detail
+    const asciiWidth = window.innerWidth < 640 ? 100 : 120; 
     
     const scale = asciiWidth / img.width;
     const asciiHeight = Math.floor(img.height * scale);
@@ -377,32 +439,40 @@
 })();
 
 /* ============================================================
-   5. EID GHOST TYPER
+   5. COMING SOON GHOST TYPER
 ============================================================ */
-(function eidTerminal() {
+(function comingSoonTerminal() {
   const output = document.getElementById('term-output');
   if (!output) return;
 
-  const sheepAscii = `
-  __________________
- < ماااءاءءااءءااءء >
-  ------------------
-     \\
-      \\
-        __
-       UooU\\.'@@@@@@\`.
-       \\__/(@@@@@@@@@@)
-            (@@@@@@@@)
-            \`YY~~~~YY'
-             ||    ||
+  const asciiText = `
+   ____ ___  __  __ ___ _   _  ____   ____   ___   ___  _   _ 
+  / ___/ _ \\|  \\/  |_ _| \\ | |/ ___| / ___| / _ \\ / _ \\| \\ | |
+ | |  | | | | |\\/| || ||  \\| | |  _  \\___ \\| | | | | | |  \\| |
+ | |__| |_| | |  | || || |\\  | |_| |  ___) | |_| | |_| | |\\  |
+  \\____\\___/|_|  |_|___|_| \\_|\\____| |____/ \\___/ \\___/|_| \\_|
 `;
 
+  const socialLinksHTML = `
+    <div style="display: flex; flex-direction: column; gap: 0.35rem; padding-left: 1rem; border-left: 2px solid var(--border); margin-bottom: 1.2rem; font-family: inherit;">
+      <a href="https://linkedin.com/in/dana-alakail" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ LINKEDIN ] dana-alakail</a>
+      <a href="#" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ EMAIL ] dana.alakail@gmail.com </a>
+      <a href="https://twitter.com/aaakllld" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ X ] @aaakllld</a>
+      <a href="https://github.com/aaaklld" target="_blank" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ GITHUB ] aaaklld</a>
+      <a href="#" style="color:var(--fg); text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--fg)'">[ DISCORD ] aaaklld</a>
+    </div>
+  `;
+
   const steps = [
-    { delay: 2600, type: 'type', text: 'cat eid.txt', prompt: 'dana_alakail@riyadh' },
+    { delay: 2600, type: 'type', text: 'cat comingsoon.txt', prompt: 'dana_alakail@riyadh' },
     { delay: 400, type: 'enter' },
-    { delay: 300, type: 'print', text: `<span style="color:var(--fg); display:block; font-family: 'JetBrains Mono', 'Noto Sans Arabic', monospace; font-size: 1rem; font-weight: 600;" dir="rtl">عيدكم مبارك، وكل عام وانتم بخير</span>` },
-    { delay: 200, type: 'print', text: `<span style="color:var(--dir); display:block; margin-bottom: 1rem; font-family: 'JetBrains Mono', 'Noto Sans Arabic', monospace; font-size: 0.85rem;" dir="rtl">من: دانه العقيّل</span>` },
-    { delay: 600, type: 'print', text: `<div class="sheep-ascii">${sheepAscii}</div>` },
+    { delay: 200, type: 'print', text: `<div class="coming-soon-ascii">${asciiText}</div>` },
+    { delay: 600, type: 'print', text: `<span style="color:var(--success);display:block;margin-bottom:0.5rem;">[ STATUS ] System architecture undergoing major overhaul.</span>` },
+    { delay: 400, type: 'print', text: `<span style="color:var(--accent);display:block;margin-bottom:1rem;">Studying, writing writeups, securing systems... see you soon ;)</span>` },
+    { delay: 800, type: 'type', text: 'cat findme.txt', prompt: 'dana_alakail@riyadh' },
+    { delay: 400, type: 'enter' },
+    { delay: 300, type: 'print', text: `<span style="color:var(--dir); display:block; margin-bottom: 0.75rem; font-family: 'JetBrains Mono', 'Noto Kufi Arabic', monospace;" dir="rtl">موقعي لسه قيد الإنشاء… وش رايك تزورني هنا:</span>` },
+    { delay: 200, type: 'print', text: socialLinksHTML },
     { delay: 800, type: 'type', text: '', prompt: 'dana_alakail@riyadh' } // Leaves a blinking cursor prompt
   ];
 
@@ -457,8 +527,8 @@
 ============================================================ */
 (function consoleEasterEgg() {
   const art = `
-%c  dana_alakail@riyadh — عيدكم مبارك!
-%c  hope you have a wonderful eid.
+%c  dana_alakail@riyadh — أهلاً وسهلاً — you opened DevTools. respect. 🇸🇦
+%c  still building. check back soon.
 `;
   console.log(art,
     'color: #ac9d99; font-family: monospace; font-weight: bold;',
