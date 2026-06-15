@@ -289,11 +289,13 @@
 
     /* ============================================================ ASCII */
     .ascii-wrap { display: flex; justify-content: center; margin: 2rem 0; overflow-x: auto; }
-    #ascii-container {
+#ascii-container {
       font-family: monospace;
       white-space: pre;
-      font-size: clamp(5px, 1.5vw, 6px); /* 5px minimum prevents it from vanishing */
-      line-height: 1.1; /* Slightly looser to prevent line overlapping */
+      /* Upped the minimum font size slightly for visibility */
+      font-size: clamp(4px, 1.6vw, 6px); 
+      line-height: 1;
+      /* Removed letter-spacing to allow clean scaling without breaking layout */
       color: var(--fg);
       user-select: none;
       text-align: left;
@@ -665,23 +667,23 @@
 })();
 
 
+/* ============================================================
+   4. ASCII ART RENDERER
+============================================================ */
 (function renderAscii() {
   const img = document.getElementById('source-image');
   const container = document.getElementById('ascii-container');
   if (!img || !container) return;
 
-  const processImage = () => {
-    // Safety check: Don't run math if image is broken or dimensions are missing
-    if (!img.naturalWidth || img.naturalWidth === 0) return; 
-
+  img.onload = () => {
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const ctx = canvas.getContext('2d');
     
-    // Set width constraint (60 for mobile, 120 for desktop)
-    const asciiWidth = window.innerWidth < 640 ? 60 : 120; 
+    // Upped the mobile width to 100 to restore high detail
+    const asciiWidth = window.innerWidth < 640 ? 100 : 120; 
     
-    const scale = asciiWidth / img.naturalWidth;
-    const asciiHeight = Math.floor(img.naturalHeight * scale);
+    const scale = asciiWidth / img.width;
+    const asciiHeight = Math.floor(img.height * scale);
     
     canvas.width = asciiWidth;
     canvas.height = asciiHeight;
@@ -701,7 +703,6 @@
         const b = pixels[offset + 2];
         const a = pixels[offset + 3];
         
-        // Treat transparent pixels as blank space
         if (a < 128) {
             asciiImage += " ";
             continue;
@@ -715,11 +716,7 @@
     container.textContent = asciiImage;
   };
   
-  if (img.complete && img.naturalWidth > 0) {
-    processImage();
-  } else {
-    img.onload = processImage;
-  }
+  if(img.complete) img.onload();
 })();
 
 (function interactiveTerminal() {
