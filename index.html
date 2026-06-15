@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Kufi+Arabic:wght@300;400;600&display=swap" rel="stylesheet" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 
   <style>
     :root, [data-theme="dark"] {
@@ -41,7 +42,9 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     ::selection { background: var(--hi); color: var(--fg); }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; 
+      -webkit-text-size-adjust: 100%; /* Stops iOS from randomly enlarging text */
+      overflow-x: hidden; }
 
     body {
       background: var(--bg);
@@ -54,6 +57,8 @@
       flex-direction: column;
       transition: background-color .35s ease, color .35s ease;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      overflow-x: hidden; 
+      width: 100%;
     }
 
     /* Terminal Semantic Colors for the Typewriter */
@@ -148,6 +153,13 @@
       right: 0;
       transform: translateX(0); /* Aligns the right edge of the tooltip with the text */
     }
+    /* Modifier for tooltips at the bottom of the page */
+    .has-tooltip.tooltip-top::after {
+      top: auto;
+      bottom: 100%;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
     /* ============================================================ NAV */
     .site-nav {
       position: sticky; top: 0; z-index: 100;
@@ -202,7 +214,34 @@
     @media (max-width: 640px) {
       #linux-clock { display: none; }
     }
+@media (max-width: 640px) {
+      #linux-clock { display: none; }
+      
+      /* Force inputs to 16px to stop iOS Safari from zooming in on focus */
+      .term-input-raw, .grep-input-raw, input[type="text"] {
+        font-size: 16px !important;
+      }
 
+      /* Force Nav onto one line */
+      .nav-inner {
+        flex-wrap: nowrap;
+        padding: 0 0.5rem;
+        gap: 0.5rem;
+      }
+      .nav-logo { font-size: 0.7rem; }
+      .theme-toggle { padding: 0.2rem 0.4rem; font-size: 0.65rem; }
+
+      /* Tidy up Footer Wrapping */
+      .bottom-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 0.5rem;
+      }
+      .bottom-bar a { margin: 0 !important; font-size: 0.7rem; }
+    }
     /* ============================================================ TOAST */
     #theme-toast {
       position: fixed; bottom: 1.5rem; left: 50%;
@@ -506,7 +545,7 @@
   <div class="sadu-divider" aria-hidden="true">/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\-:-/\/\</div>
 
   <section id="contact">
-    <h2 class="sec-title"><span class="has-tooltip" data-tooltip="الووووووو؟">./contact</span></h2>
+    <h2 class="sec-title"><a href="contact.html"><span class="has-tooltip" data-tooltip="الووووووو؟">./contact</span></a></h2>
     <div id="typer-container" aria-live="polite"></div>
   </section>
 
@@ -514,10 +553,10 @@
 
 <footer class="bottom-bar">
   aloooo? contact me! 
-  <a href="mailto:dana.alakail@gmail.com" class="has-tooltip" data-tooltip='echo "Hello" | nc dana_alakail 25' style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ EMAIL ]</a> 
+  <a href="mailto:dana.alakail@gmail.com" class="has-tooltip tooltip-top" data-tooltip='echo "Hello" | nc dana_alakail 25' style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ EMAIL ]</a> 
   <a href="https://linkedin.com/in/dana-alakail" style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ LINKEDIN ]</a> 
   <a href="https://x.com/aaakllld" style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ X ]</a>
-  <a href="https://github.com/aaaklld" class="has-tooltip" data-tooltip='git commit -m "لا تسرق اكوادي..."' style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ GITHUB ]</a>
+  <a href="https://github.com/aaaklld" class="has-tooltip tooltip-top" data-tooltip='git commit -m "لا تسرق اكوادي..."' style="color:var(--fg); text-decoration:none; margin: 0 0.5rem;">[ GITHUB ]</a>
 </footer>
 
 
@@ -840,7 +879,7 @@ const steps = [
       focus: "foundational penetration testing skills and methodologies.",
       status: "COMPLETED: 2026-MAR-19",
       flags: "`-w, --web`: Web app attacks\n`-n, --network`: Network attacks",
-      link: "#",
+      link: "https://certs.ine.com/9ec480f0-eab5-4b1b-b1c1-ec4a05e9811b",
       pgp: true
     },
     {
@@ -858,7 +897,7 @@ const steps = [
       focus: "core security concepts and practices.",
       status: "COMPLETED: 2026-FEB-19",
       flags: "`-d, --defense`: Threat mitigation\n`-a, --architecture`: Secure design",
-      link: "#",
+      link: "#https://www.credly.com/badges/86c7a5f0-8c2b-4992-8db6-57574bab9207",
       pgp: true
     },
     {
@@ -882,7 +921,7 @@ const steps = [
       focus: "AWS Cloud platform, covering basic security and compliance.",
       status: "COMPLETED: 2025-SEP-30",
       flags: "`-c, --cloud`: Cloud fundamentals\n`-s, --security`: IAM & Policies",
-      link: "#",
+      link: "https://www.credly.com/badges/bac92999-2ebf-4013-baf8-95753971febb",
       pgp: true
     },
     {
@@ -952,7 +991,7 @@ let currentIdx = 0;
   <div style="color: var(--fg);">${c.flags.replace(/\n/g, '<br>')}</div>
   
   <div style="color: var(--dir); font-weight: bold;">-v, --view</div>
-  <div><a href="${c.link}" style="color:var(--accent); text-decoration:underline;">[ CLICK HERE TO VERIFY ]</a></div>
+  <div><a href="${c.link}" style="color:var(--accent); text-decoration:underline;">[ VERIFY ]</a></div>
 </div>`;
 
     if (c.pgp) {
@@ -1144,9 +1183,9 @@ let currentIdx = 0;
   const out2 = [
     [{ text: "[*] ", classes: "color-dim" }, { text: "website (home)", href: "index.html", classes: "color-accent" }],
     [{ text: "[*] ", classes: "color-dim" }, { text: "email", href: "mailto:dana.alakail@gmail.com", classes: "color-accent", tooltip: 'echo "Hello" | nc dana_alakail 25' }],
-    [{ text: "[*] ", classes: "color-dim" }, { text: "linkedin", href: "[https://linkedin.com/in/dana-alakail](https://linkedin.com/in/dana-alakail)", target: "_blank", classes: "color-accent" }],
-    [{ text: "[*] ", classes: "color-dim" }, { text: "x", href: "[https://twitter.com/aaakllld](https://twitter.com/aaakllld)", target: "_blank", classes: "color-accent" }],
-    [{ text: "[*] ", classes: "color-dim" }, { text: "github", href: "[https://github.com/aaaklld](https://github.com/aaaklld)", target: "_blank", classes: "color-accent", tooltip: 'git commit -m "لا تسرق اكوادي..."' }],
+    [{ text: "[*] ", classes: "color-dim" }, { text: "linkedin", href: "https://linkedin.com/in/dana-alakail", target: "_blank", classes: "color-accent" }],
+    [{ text: "[*] ", classes: "color-dim" }, { text: "x", href: "https://x.com/aaakllld", target: "_blank", classes: "color-accent" }],
+    [{ text: "[*] ", classes: "color-dim" }, { text: "github", href: "https://github.com/aaaklld", target: "_blank", classes: "color-accent", tooltip: 'git commit -m "لا تسرق اكوادي..."' }],
     [{ text: "" }], 
     [{ text: "[+] ", classes: "color-success" }, { text: "AVAILABILITY: Available for projects, co-op/internships.", classes: "color-fg" }],
     [{ text: "[+] ", classes: "color-success" }, { text: "to view my CV, click [ ", classes: "color-fg" }, { text: "here", href: "cv.html", classes: "color-dir" }, { text: " ]", classes: "color-fg" }]
