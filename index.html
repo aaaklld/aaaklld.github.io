@@ -298,8 +298,14 @@
     .cursor { display: inline-block; width: .55em; height: 1em; background: var(--cursor); vertical-align: text-bottom; animation: blink 1.1s step-end infinite; }
     .cursor.static { animation: none; opacity: 1; }
 
-    /* Interactive Input */
-    .term-input-row { display: flex; align-items: center; gap: .4rem; margin-top: .5rem; }
+   /* Interactive Input */
+    .term-input-row { 
+      display: flex; 
+      align-items: center; 
+      flex-wrap: wrap; /* Allows input to wrap gracefully */
+      gap: .4rem; 
+      margin-top: .5rem; 
+    }
     .term-input-raw { background: transparent; border: none; outline: none; color: var(--fg); font-family: 'JetBrains Mono', monospace; font-size: .8rem; flex: 1; caret-color: var(--cursor); min-width: 0; }
 
     /* ============================================================ HEX DUMP PROJECTS */
@@ -459,7 +465,7 @@
     <div class="ascii-wrap">
       <img id="source-image" src="IMG_3044.PNG" style="display:none;" crossorigin="anonymous">
       <div id="ascii-container" aria-hidden="true"></div>
-    </div>
+    </div></section>
 
   <section id="initiation">
     <div class="term-block" id="explore-terminal">
