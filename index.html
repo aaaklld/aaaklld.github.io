@@ -44,8 +44,7 @@
     ::selection { background: var(--hi); color: var(--fg); }
     html { 
       scroll-behavior: smooth; 
-      -webkit-text-size-adjust: none !important; /* Forces iOS to respect your font sizes */
-      text-size-adjust: none !important; 
+      -webkit-text-size-adjust: 100%; /* Fixes the random large text issue */
     }
 
     body {
@@ -58,10 +57,9 @@
       display: flex;
       flex-direction: column;
       transition: background-color .35s ease, color .35s ease;
+      overflow-x: hidden; /* Exactly matching your eid.html file */
+      width: 100%;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      
-      max-width: 100vw;
-      overflow-x: clip; /* Clips wedges without breaking the iOS viewport zoom */
     }
 
     /* Terminal Semantic Colors for the Typewriter */
@@ -71,8 +69,16 @@
     .color-fg { color: var(--fg); }
     .color-dir { color: var(--dir); font-weight: bold; text-decoration: underline;}
 
-    .site-wrapper { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; flex: 1; display: flex; flex-direction: column; }
-    
+.site-wrapper { 
+      max-width: 860px; 
+      margin: 0 auto; 
+      padding: 0 1.5rem; 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      width: 100%; 
+      overflow-x: hidden; /* Stops internal elements from blowing out the sides */
+    }    
     section { padding: 3rem 0; position: relative; }
     
     .sadu-divider {
@@ -187,8 +193,13 @@
     .nav-logo .ns { color: var(--dim); }
     .nav-logo .np { color: var(--accent); }
 
-    .nav-right { display: flex; align-items: center; gap: 1rem; }
-
+.nav-right { 
+      display: flex; 
+      align-items: center; 
+      gap: 1rem; 
+      flex-wrap: wrap; /* Prevents the search + clock + toggle from forcing a wide screen */
+      justify-content: flex-end;
+    }
     .nav-link {
       color: var(--dim);
       text-decoration: none;
@@ -443,8 +454,12 @@
     .interactive-note { text-align: center; color: var(--dim); font-size: 0.75rem; margin-top: 1.5rem; font-style: italic; line-height: 1.8; font-family: 'JetBrains Mono', 'Noto Kufi Arabic', monospace; }
 
     /* ============================================================ FOOTER / CONTACT */
-    #typer-container { margin-top: 1rem; font-size: 0.8rem; min-height: 150px;}
-    .cmd-output a { transition: all 0.2s; }
+#typer-container { 
+      margin-top: 1rem; 
+      font-size: 0.8rem; 
+      min-height: 150px; 
+      word-break: break-word; /* Forces the long footer terminal text to wrap */
+    }    .cmd-output a { transition: all 0.2s; }
     .cmd-output a:hover { color: var(--dir); border-bottom: 1px solid var(--dir); }
     .bottom-bar { border-top: 1px dashed var(--border); padding: 1.5rem 0; margin-top: 2rem; font-size: 0.75rem; text-align: center; color: var(--dim); }
 
@@ -643,10 +658,11 @@
   img.onload = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const asciiWidth = window.innerWidth < 640 ? 100 : 120; 
+    
+    // Changed from 100 to 60 to match your working eid.html file
+    const asciiWidth = window.innerWidth < 640 ? 60 : 120; 
     
     const scale = asciiWidth / img.width;
-    const asciiHeight = Math.floor(img.height * scale);
     
     canvas.width = asciiWidth;
     canvas.height = asciiHeight;
