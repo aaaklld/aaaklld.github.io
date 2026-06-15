@@ -14,19 +14,22 @@
     /* ============================================================
        TOKENS & RESET (Monochromatic Minimalist Palette)
     ============================================================ */
-     :root, [data-theme="dark"] {
+    :root, [data-theme="dark"] {
       --bg:        #170005;
       --bg-raised: #290a14;
       --bg-sunken: #1c050c; 
-      --fg:        #e3c8cd; /* Lighter, soft peach/pink blush */
-      --accent:    #c49da5; /* Warmer, mid-tone dusty pink */
-      --dim:       #96727b; /* Cooled down pink-grey for readability */
-      --dir:       #c49da5; /* Matches accent */
+      --fg:        #e3c8cd; 
+      --accent:    #c49da5; 
+      --dim:       #96727b; 
+      --dir:       #c49da5; 
       --error:     #8a4b56; 
       --success:   #5b705b; 
       --border:    #4a1827; 
-      --cursor:    #e3c8cd; /* Matches main text */
+      --cursor:    #e3c8cd; 
       --hi:        #290a14;
+      --c-body:      var(--dim);
+      --c-highlight: var(--accent);
+      --c-strong:    var(--fg);
     }
     [data-theme="light"] {
       --bg:        #c6c5c0;
@@ -304,7 +307,7 @@ const cvData = {
   <div class="section-header">[ TECHNICAL PROJECTS ]</div>
   
   <div class="block-margin">
-    <div><span class="color-success">[+]</span> <a href="#" class="color-accent">"Al-Khokha" (Network Security Tool)</a></div>
+    <div><span class="color-success">[+]</span> <a href="al-khokha.html" class="color-accent">"Al-Khokha" (Network Security Tool)</a></div>
     <div class="indent">Engineered a stealth network security tool utilizing <span class="color-accent">ICMP steganography</span> to create temporary, encrypted access paths.</div>
     <div class="indent">Implemented ping request mechanisms to bypass Deep Packet Inspection (DPI) and firewalls without opening permanent ports.</div>
   </div>
@@ -351,9 +354,9 @@ CERTS(1)                         User Commands                        CERTS(1)
 
 <span class="color-accent">SYNOPSIS</span>
        <span class="color-dim">EXECUTED:</span>
-       <span class="color-success">[*]</span> <a href="#">eJPTv2 (Junior Penetration Tester) - INE</a> (Mar 2026)
-       <span class="color-success">[*]</span> <a href="#">CompTIA Security+</a> (Feb 2026)
-       <span class="color-success">[*]</span> <a href="#">AWS Certified Cloud Practitioner</a> (Sep 2025)
+       <span class="color-success">[*]</span> <a href="https://certs.ine.com/9ec480f0-eab5-4b1b-b1c1-ec4a05e9811b#acc.cxz42Hr1">eJPTv2 (Junior Penetration Tester) - INE</a> (Mar 2026)
+       <span class="color-success">[*]</span> <a href="https://www.credly.com/badges/86c7a5f0-8c2b-4992-8db6-57574bab9207">CompTIA Security+</a> (Feb 2026)
+       <span class="color-success">[*]</span> <a href="https://www.credly.com/badges/bac92999-2ebf-4013-baf8-95753971febb">AWS Certified Cloud Practitioner</a> (Sep 2025)
        <span class="color-success">[*]</span> IELTS (Score: 7.5) | PTE (Score 88/90) 
 
        <span class="color-dim">INITIALIZING:</span>
@@ -451,14 +454,15 @@ async function bootSequence() {
   await humanType(txtNode, ["cat RED", -2, "EADME.txt"]);
   if (activeCursor) activeCursor.remove();
   
-  // Output Arabic Welcome
+
+// Output Arabic Welcome
   printHtml(`
     <div class="arabic-text" dir="rtl">
       اهلا وسهلا!<br>
       انا دانه العقيّل.. كيف تبغى تشوف السي في حقي؟
     </div>
-    <button class="choice-btn" id="btn-interactive"><span class="prompt-exec">&gt;&gt;</span> النسخة التفاعلية</button>
-    <button class="choice-btn" id="btn-static"><span class="prompt-exec">&gt;&gt;</span> النسخة الثابتة</button>
+    <button class="choice-btn" id="btn-static"><span class="prompt-exec">&gt;&gt;</span> النسخة الكلاسيكية (قراءة كاملة)</button>
+    <button class="choice-btn" id="btn-interactive"><span class="prompt-exec">&gt;&gt;</span> النسخة التفاعلية (Terminal)</button>
   `);
 
   // Await Selection
