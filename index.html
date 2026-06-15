@@ -226,6 +226,16 @@
     }
 
     @media (max-width: 640px) {
+      /* Drop global font size from 14px to ~12px to reduce wrapping */
+      body {
+        font-size: 0.75rem; 
+      }
+      
+      /* Ensure terminal body text inherits the smaller size */
+      .term-body {
+        font-size: 0.75rem;
+      }
+      
       #linux-clock { display: none; }
       
       /* Force inputs to 16px to stop iOS Safari from zooming in on focus */
@@ -280,10 +290,14 @@
     /* ============================================================ ASCII */
     .ascii-wrap { display: flex; justify-content: center; margin: 2rem 0; overflow-x: auto; }
     #ascii-container {
-      font-family: monospace; white-space: pre; font-size: clamp(4px, 1.6vw, 6px); 
-      line-height: 1; color: var(--fg); user-select: none; text-align: left;
+      font-family: monospace;
+      white-space: pre;
+      font-size: clamp(5px, 1.5vw, 6px); /* 5px minimum prevents it from vanishing */
+      line-height: 1.1; /* Slightly looser to prevent line overlapping */
+      color: var(--fg);
+      user-select: none;
+      text-align: left;
     }
-
     /* ============================================================ TERMINAL UI */
     .term-block {
       background: var(--bg-sunken); border: 1px solid var(--border);
@@ -429,13 +443,14 @@
     .grep-input-raw { background: transparent; border: none; outline: none; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: .8rem; width: 120px; caret-color: var(--cursor); pointer-events: none;}
 
     /* ============================================================ SKILLS STAR GRAPH (OBSIDIAN STYLE) */
-    #graph-container { 
+#graph-container { 
       width: 100%; 
       height: 450px; 
       background: transparent; 
       border: none; 
       position: relative; 
-      overflow: hidden; /* Clips any rogue star labels from creating a scrollable wedge */
+      overflow: hidden; 
+      touch-action: none; /* Stops the browser from hijacking the swipe to scroll */
     }
     
     .link { stroke: var(--dim); stroke-opacity: 0.15; stroke-width: 0.8px; stroke-dasharray: 4, 4; transition: stroke-opacity 0.2s ease, stroke 0.2s ease; }
@@ -655,14 +670,18 @@
   const container = document.getElementById('ascii-container');
   if (!img || !container) return;
 
-  img.onload = () => {
+  const processImage = () => {
+    // Safety check: Don't run math if image is broken or dimensions are missing
+    if (!img.naturalWidth || img.naturalWidth === 0) return; 
+
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     
-    // Changed from 100 to 60 to match your working eid.html file
+    // Set width constraint (60 for mobile, 120 for desktop)
     const asciiWidth = window.innerWidth < 640 ? 60 : 120; 
     
-    const scale = asciiWidth / img.width;
+    const scale = asciiWidth / img.naturalWidth;
+    const asciiHeight = Math.floor(img.naturalHeight * scale);
     
     canvas.width = asciiWidth;
     canvas.height = asciiHeight;
@@ -682,6 +701,7 @@
         const b = pixels[offset + 2];
         const a = pixels[offset + 3];
         
+        // Treat transparent pixels as blank space
         if (a < 128) {
             asciiImage += " ";
             continue;
@@ -695,7 +715,11 @@
     container.textContent = asciiImage;
   };
   
-  if(img.complete) img.onload();
+  if (img.complete && img.naturalWidth > 0) {
+    processImage();
+  } else {
+    img.onload = processImage;
+  }
 })();
 
 (function interactiveTerminal() {
