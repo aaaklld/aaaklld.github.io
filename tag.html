@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>dana_alakail@riyadh:~/nfc $</title>
+  <meta name="description" content="Dana Alakail - Cybersecurity Student @ KSU" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Kufi+Arabic:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* TOKENS */
+    :root, [data-theme="dark"] {
+      --bg:        #170005;
+      --bg-raised: #290a14;
+      --bg-sunken: #1c050c; 
+      --fg:        #e3c8cd; 
+      --accent:    #c49da5; 
+      --dim:       #96727b; 
+      --dir:       #c49da5; 
+      --error:     #8a4b56; 
+      --success:   #5b705b; 
+      --border:    #4a1827; 
+      --cursor:    #e3c8cd; 
+      --hi:        #290a14;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    ::selection { background: var(--hi); color: var(--fg); }
+    
+    body {
+      background: var(--bg); color: var(--fg);
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.85rem; line-height: 1.6; min-height: 100vh;
+      display: flex; flex-direction: column; overflow-x: hidden;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    .site-wrapper { max-width: 600px; margin: 2rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
+
+    /* BOOT SCREEN */
+    #boot-screen {
+      position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity .4s ease;
+    }
+    #boot-screen.done { opacity: 0; pointer-events: none; }
+    .boot-inner { max-width: 600px; width: 90%; font-size: .75rem; }
+    .boot-line { color: var(--dim); margin-bottom: .18rem; }
+    .boot-line.ok { color: var(--success); font-weight: 700; }
+    .boot-line.hi { color: var(--fg); font-weight: 700; }
+
+    /* ASCII & GREETING */
+    .ascii-wrap { display: flex; justify-content: center; margin-bottom: 1.5rem; overflow-x: auto; width: 100%; }
+    #ascii-container { font-family: monospace; white-space: pre; font-size: clamp(3px, 1.2vw, 5px); line-height: 1; color: var(--fg); user-select: none; }
+    
+    .event-greeting { text-align: center; margin-bottom: 2rem; border-bottom: 1px dashed var(--border); padding-bottom: 1rem; }
+    .event-greeting h1 { font-size: 1.1rem; color: var(--dir); font-weight: 600; letter-spacing: 1px; }
+    
+    /* BIO BLOCK */
+    .bio-block { background: var(--bg-sunken); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.5rem; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+    .bio-en { margin-bottom: 1rem; }
+    .bio-ar { font-family: 'Noto Kufi Arabic', monospace; text-align: right; color: var(--accent); font-size: 0.9rem; }
+    .label { color: var(--dim); font-size: 0.75rem; letter-spacing: 1px;}
+
+    /* LINKS (TACTILE & FLEXIBLE) */
+    .link-grid { display: flex; flex-direction: column; gap: 0.75rem; padding-bottom: 2rem; }
+    .cmd-link {
+      display: flex; justify-content: space-between; align-items: center;
+      text-decoration: none; color: var(--fg);
+      background: var(--bg-raised); border: 1px solid var(--border);
+      padding: 0.9rem 1.2rem; border-radius: 4px; transition: all 0.15s ease;
+    }
+    .cmd-link-left { display: flex; align-items: center; gap: 0.5rem; }
+    .cmd-link-left::before { content: "> ./"; color: var(--success); font-weight: bold; }
+    .cmd-link span.file { color: var(--accent); font-weight: 600; }
+    .cmd-link span.desc { color: var(--dim); font-size: 0.75rem; }
+    
+    .cmd-link:active { transform: scale(0.98); border-color: var(--dir); background: var(--hi); }
+    
+    .cmd-link.primary { border-color: color-mix(in srgb, var(--dir) 50%, transparent); box-shadow: 0 0 8px rgba(196, 157, 165, 0.05); }
+
+    /* SOCIAL ROW SPECIFICS */
+    .social-row { display: flex; gap: 0.75rem; }
+    .social-row .cmd-link { flex: 1; padding: 0.75rem 0.5rem; justify-content: center; }
+    .social-row .cmd-link-left { justify-content: center; gap: 0.3rem; }
+    .social-row .cmd-link-left::before { content: "./"; } /* Shorter prefix to save space */
+    .social-row .file { font-size: 0.75rem; }
+
+    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+    .cursor { display: inline-block; width: .55em; height: 1em; background: var(--cursor); vertical-align: text-bottom; animation: blink 1.1s step-end infinite; }
+    .cursor.static { animation: none; opacity: 1; }
+  </style>
+</head>
+
+<body>
+
+<div id="boot-screen" aria-hidden="true">
+  <div class="boot-inner" id="boot-lines"></div>
+</div>
+
+<main class="site-wrapper">
+  
+  <div class="ascii-wrap">
+    <img id="source-image" src="IMG_3044.PNG" style="display:none;" crossorigin="anonymous">
+    <div id="ascii-container" aria-hidden="true"></div>
+  </div>
+
+  <div class="event-greeting">
+    <h1><span style="color:var(--dim)">$ </span><span id="typing-echo"></span><span class="cursor" id="greeting-cursor"></span></h1>
+  </div>
+
+  <!-- BIO -->
+  <div class="bio-block">
+    <!-- Unified Label -->
+    <div style="text-align: center; margin-bottom: 1.2rem;"><span class="label">[ WHOAMI / مين_أنا ]</span></div>
+    
+    <!-- English Description -->
+    <div class="bio-en">
+      Cybersecurity Senior @ KSU ('27) & KAUST Academy Alumna.<br>
+      Specializing in active defense, security engineering, and FinTech.
+    </div>
+    
+    <!-- Arabic Description -->
+    <div class="bio-ar" dir="rtl" style="margin-bottom: 1.2rem;">
+      طالبة أمن سيبراني بجامعة الملك سعود ('27)، وخريجة أكاديمية كاوست.<br>
+      متخصصة في الدفاع النشط، هندسة الأمن السيبراني، والتقنية المالية (FinTech).
+    </div>
+    
+    <!-- Unified Metadata -->
+    <div class="bio-meta" style="border-top: 1px dashed var(--border); padding-top: 1rem; font-size: 0.8rem;">
+      <div style="margin-bottom: 0.4rem;">
+        <span style="color:var(--dim); font-weight: 600;">[ CERTS ]</span> 
+        <span style="color:var(--fg);">eJPT, Security+, AWS CLF-C02.</span>
+      </div>
+      <div>
+        <span style="color:var(--dim); font-weight: 600;">[ STATUS ]</span> 
+        <span style="color:var(--accent);">Seeking Cyber Defense roles & Dec 2026 Co-op.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TACTILE LINKS -->
+  <div class="link-grid">
+    <a href="index.html" class="cmd-link primary">
+      <div class="cmd-link-left"><span class="file">index.html</span></div><span class="desc">[Portfolio]</span>
+    </a>
+    <a href="cv.html" class="cmd-link primary">
+      <div class="cmd-link-left"><span class="file">cv.pdf</span></div><span class="desc">[CV]</span>
+    </a>
+    <a href="khokha.html" class="cmd-link">
+      <div class="cmd-link-left"><span class="file">al_khokha.sh</span></div><span class="desc">[Project]</span>
+    </a>
+    
+    <!-- SMALLER SOCIAL ROW -->
+    <div class="social-row">
+      <a href="https://linkedin.com/in/dana-alakail" class="cmd-link">
+        <div class="cmd-link-left"><span class="file">linkedin.py</span></div>
+      </a>
+      <a href="https://x.com/aaakllld" class="cmd-link">
+        <div class="cmd-link-left"><span class="file">twitter.sh</span></div>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+'use strict';
+
+/* --- EDIT EVENT NAME HERE (The JS below will format it inside the quotes) --- */
+const EVENT_NAME = "Hala Leap 2026!";
+/* ------------------------------------------------------------------------- */
+
+// Boot & Type Sequence
+(async function initSequence() {
+  const screen = document.getElementById('boot-screen');
+  const container = document.getElementById('boot-lines');
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  function addLine(text, className = '') {
+    const el = document.createElement('p');
+    el.innerHTML = text; el.className = 'boot-line ' + className;
+    container.appendChild(el);
+  }
+
+  // 1. Terminal Boot
+  addLine('[ NFC_HANDSHAKE_INITIATED ]', 'hi');
+  await sleep(150);
+  addLine('establishing secure connection...');
+  await sleep(200);
+  addLine('exchanging public keys...');
+  await sleep(150);
+  addLine('resolving payload: <span style="color:var(--accent)">profile_data.bin</span>');
+  await sleep(250);
+  addLine('ACCESS GRANTED', 'ok');
+  await sleep(300);
+
+  screen.classList.add('done');
+  setTimeout(() => screen.remove(), 400);
+  
+  // 2. Ghost Typing the Greeting (with the mistake!)
+  await sleep(600); // Wait for boot screen to fade
+  
+  const typeTarget = document.getElementById('typing-echo');
+  const cursor = document.getElementById('greeting-cursor');
+  let currentText = "";
+  
+  cursor.classList.add('static'); // Stop blinking while typing
+  
+  // Helper to type string
+  async function typeStr(str) {
+    for (let char of str) {
+      currentText += char;
+      typeTarget.textContent = currentText;
+      await sleep(Math.random() * 40 + 40);
+    }
+  }
+  
+  // Helper to backspace
+  async function backspace(count) {
+    for (let i = 0; i < count; i++) {
+      currentText = currentText.slice(0, -1);
+      typeTarget.textContent = currentText;
+      await sleep(50);
+    }
+  }
+
+  /* --- The Typo Sequence --- */
+  // NOTE: If you change the EVENT_NAME in the future, you can update this 
+  // sequence to make a custom typo for that specific event name.
+  
+  await typeStr('echo "Hala L');
+  await sleep(150); 
+  await typeStr('ae');      // The mistake!
+  await sleep(400);         // Pause to "realize" the mistake
+  await backspace(2);       // Delete the 'ae'
+  await sleep(200);
+  await typeStr('eap 2026!"'); // Fix it and finish
+  
+  /* ------------------------ */
+  
+  // Apply final syntax highlight colors to the quotes
+  typeTarget.innerHTML = `echo <span style="color:var(--dir)">"${EVENT_NAME}"</span>`;
+  cursor.classList.remove('static');
+})();
+
+// ASCII Art Renderer
+(function renderAscii() {
+  const img = document.getElementById('source-image');
+  const container = document.getElementById('ascii-container');
+  if (!img || !container) return;
+
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const asciiWidth = 90; 
+    const scale = asciiWidth / img.width;
+    const asciiHeight = Math.floor(img.height * scale);
+    
+    canvas.width = asciiWidth; canvas.height = asciiHeight;
+    ctx.drawImage(img, 0, 0, asciiWidth, asciiHeight);
+    
+    const pixels = ctx.getImageData(0, 0, asciiWidth, asciiHeight).data;
+    const density = "@%#*+=-:. ";
+    let asciiImage = "";
+
+    for (let y = 0; y < asciiHeight; y++) {
+      for (let x = 0; x < asciiWidth; x++) {
+        const offset = (y * asciiWidth + x) * 4;
+        if (pixels[offset + 3] < 128) { asciiImage += " "; continue; }
+        const avg = (pixels[offset] + pixels[offset + 1] + pixels[offset + 2]) / 3;
+        asciiImage += density[Math.floor((avg / 255) * (density.length - 1))];
+      }
+      asciiImage += "\n";
+    }
+    container.textContent = asciiImage;
+  };
+  if(img.complete) img.onload();
+})();
+</script>
+</body>
+</html>
